@@ -1,0 +1,10 @@
+# Credentials — keep local only; do not commit DB passwords
+control_panel_maha/config.php
+config.php
+whatsapp-env.php
+
+# Logs / local PHP
+error_log
+**/error_log
+.user.ini
+php.ini
