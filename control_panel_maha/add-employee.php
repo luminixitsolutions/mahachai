@@ -57,28 +57,291 @@ $Page = "Add-Employee";
         padding-right: 40px !important;
     }
 
-    fieldset legend {
-        background: inherit;
-        font-family: "Lato", sans-serif;
-        color: #650812;
-        font-size: 15px;
-        left: 10px;
-        padding: 0 10px;
-        position: absolute;
-        top: -12px;
-        font-weight: 400;
-        width: auto !important;
-        border: none !important;
+    .employee-form-sections.emp-wizard-mode .emp-wizard-shell {
+        margin-bottom: 16px;
     }
 
-    fieldset {
-        background: #ffffff;
-        border: 1px solid #4FAFB8;
-        border-radius: 5px;
-        margin: 20px 0 1px 0;
-        padding: 20px;
-        position: relative;
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-wrap {
+        background: #f8fcfd;
+        border: 1px solid #c5e4e7;
+        border-radius: 8px;
+        padding: 12px 10px;
+        margin-bottom: 16px;
+        overflow-x: auto;
     }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        min-width: min-content;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav li {
+        flex: 0 0 auto;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid #c5e4e7;
+        border-radius: 24px;
+        background: #fff;
+        color: #358f9a;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-btn:hover {
+        border-color: #4FAFB8;
+        background: #eef7f8;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-btn.active {
+        background: #4FAFB8;
+        border-color: #4FAFB8;
+        color: #fff;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-btn .emp-wiz-num {
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        border-radius: 50%;
+        background: #e8f4f5;
+        color: #358f9a;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-nav-btn.active .emp-wiz-num {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-form-section {
+        border: 1px solid #4FAFB8;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(79, 175, 184, 0.12);
+        display: none;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-form-section.is-active {
+        display: block;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-step-head-hidden {
+        display: none !important;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-panel-heading {
+        font-size: 17px;
+        font-weight: 600;
+        color: #358f9a;
+        padding: 14px 18px;
+        margin: 0;
+        background: linear-gradient(90deg, #e8f4f5 0%, #fff 100%);
+        border-bottom: 1px dashed #c5e4e7;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-form-section-body {
+        display: block;
+        padding: 0;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-form-section-inner {
+        padding: 18px 18px 8px;
+        border-top: none;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #e8f4f5;
+    }
+
+    .employee-form-sections.emp-wizard-mode .emp-wizard-actions .emp-wizard-step-hint {
+        color: #6c757d;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .employee-form-sections .emp-form-section-inner .form-row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    #emp-menu-access.emp-form-section .emp-form-section-inner {
+        background: #fff;
+        padding-top: 8px;
+    }
+
+    .emp-cp-menu-access {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .emp-cp-ma-table-head,
+    .emp-cp-ma-subheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f1f3f5;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .emp-cp-ma-table-head span:last-child,
+    .emp-cp-ma-subheader span:last-child {
+        min-width: 52px;
+        text-align: center;
+    }
+
+    .emp-cp-ma-item {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .emp-cp-ma-item:last-child {
+        border-bottom: none;
+    }
+
+    .emp-cp-ma-trigger {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        user-select: none;
+        background: #fff;
+        transition: background 0.15s ease;
+    }
+
+    .emp-cp-ma-trigger:hover {
+        background: #f8f9fa;
+    }
+
+    .emp-cp-ma-trigger-sub {
+        padding-left: 28px;
+        background: #fafbfc;
+    }
+
+    .emp-cp-ma-trigger-sub .emp-cp-ma-title {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .emp-cp-ma-toggle {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #28a745;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 16px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .emp-cp-ma-icon-minus {
+        display: none;
+    }
+
+    .emp-cp-ma-item.is-open > .emp-cp-ma-trigger .emp-cp-ma-icon-plus {
+        display: none;
+    }
+
+    .emp-cp-ma-item.is-open > .emp-cp-ma-trigger .emp-cp-ma-icon-minus {
+        display: inline;
+    }
+
+    .emp-cp-ma-title {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .emp-cp-ma-check {
+        min-width: 52px;
+        display: flex;
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .emp-cp-ma-check .custom-control-label::before,
+    .emp-cp-ma-check .custom-control-label::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .emp-cp-ma-panel {
+        display: none;
+        background: #fff;
+    }
+
+    .emp-cp-ma-item.is-open > .emp-cp-ma-panel {
+        display: block;
+    }
+
+    .emp-cp-ma-panel-sub {
+        border-top: 1px solid #eef1f3;
+    }
+
+    .emp-cp-ma-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px 10px 56px;
+        border-top: 1px solid #f1f3f5;
+        font-size: 13px;
+        color: #343a40;
+    }
+
+    .emp-cp-ma-panel-sub .emp-cp-ma-row {
+        padding-left: 72px;
+    }
+
+    .emp-cp-ma-row-label {
+        flex: 1;
+        padding-right: 12px;
+    }
+
+    .emp-cp-ma-subheader {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .emp-cp-ma-panel > .emp-cp-ma-item:first-child .emp-cp-ma-trigger-sub {
+        border-top: 1px solid #eef1f3;
+    }
+
+    #emp-options-access .form-group.col-md-4 {
+        margin-bottom: 10px;
+    }
+
     #loader {
     display: none;
     position: fixed;
@@ -134,6 +397,24 @@ $row71['att_zones'] = array_filter(array_map('trim', explode(',', isset($row71['
 $row71['att_subzones'] = array_filter(array_map('trim', explode(',', isset($row71['att_subzones']) ? (string) $row71['att_subzones'] : '')));
 $row71['bdm_zones'] = array_filter(array_map('trim', explode(',', isset($row71['bdm_zones']) ? (string) $row71['bdm_zones'] : '')));
 $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row71['bdm_subzones']) ? (string) $row71['bdm_subzones'] : '')));
+
+function emp_form_section_start($title, $attrs = '', $activeDefault = false) {
+    static $n = 0;
+    $n++;
+    $sid = 'emp-sec-' . $n;
+    $attrStr = $attrs !== '' ? ' ' . trim($attrs) : '';
+    $activeClass = $activeDefault ? ' is-active' : '';
+    $titleEsc = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+    echo '<div class="emp-form-section emp-wizard-step' . $activeClass . '"' . $attrStr . ' data-section="' . $sid . '" data-step="' . $n . '" data-step-title="' . $titleEsc . '">';
+    echo '<div class="emp-form-section-head emp-wizard-step-head-hidden"><span class="emp-form-section-title">' . $titleEsc . '</span></div>';
+    echo '<div class="emp-form-section-body" id="' . $sid . '-body">';
+    echo '<h5 class="emp-wizard-panel-heading">' . $titleEsc . '</h5>';
+    echo '<div class="emp-form-section-inner">';
+}
+
+function emp_form_section_end() {
+    echo '</div></div></div>';
+}
 ?>
 
                 <div class="layout-content">
@@ -141,15 +422,20 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
                     <div class="container-fluid flex-grow-1 container-p-y">
                         <h4 class="font-weight-bold py-3 mb-0"><?php if($_GET['id']) {?>Edit <?php } else{?> Add
                             <?php } ?> Employee Account</h4>
+                        <p class="text-muted mb-3"><i class="fa fa-info-circle"></i> Use the <strong>wizard steps</strong> below to jump to any section — you do not need to complete steps in order.</p>
 
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div id="alert_message"></div>
-                                <form id="validation-form" method="post" autocomplete="off" action="ajax_files/ajax_employee.php" enctype="multipart/form-data">
+                                <form id="validation-form" class="employee-form-sections emp-wizard-mode" method="post" autocomplete="off" action="ajax_files/ajax_employee.php" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" id="userid">
                                     <input type="hidden" name="action" value="Save" id="action">
-                                     <fieldset>
- <legend>Personal Detail</legend>
+                                    <div class="emp-wizard-shell">
+                                        <div class="emp-wizard-nav-wrap">
+                                            <ul class="emp-wizard-nav" id="emp-wizard-nav" role="tablist" aria-label="Employee form steps"></ul>
+                                        </div>
+                                        <div class="emp-wizard-steps">
+                                     <?php emp_form_section_start('Personal Detail', '', true); ?>
                                     <div class="form-row">
                                        
                                         <div class="form-group col-md-4">
@@ -270,8 +556,11 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
                                                 autocomplete="off"><?php echo $row7["Address"]; ?></textarea>
                                             <div class="clearfix"></div>
                                         </div>
-                                        
-                                        
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
+
+                                     <?php emp_form_section_start('Login & Contact'); ?>
+                                    <div class="form-row">
                                     <div class="form-group col-md-3">
                                             <label class="form-label">Password <span
                                                     class="text-danger">*</span>
@@ -419,9 +708,11 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
                                             </span>
                                             <?php } ?>
                                         </div>
-                                        
-                                                                               
-                                        
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
+
+                                     <?php emp_form_section_start('Nominee Detail'); ?>
+                                    <div class="form-row">
                                          <div class="form-group col-md-3">
                                             <label class="form-label">Nominee Name </label>
                                             <input type="text" name="NomineeName" id="NomineeName" class="form-control"
@@ -449,9 +740,11 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
                                                 autocomplete="off">
                                             <div class="clearfix"></div>
                                         </div>
-                                        
-                                        
-                                        
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
+
+                                     <?php emp_form_section_start('Employment Detail'); ?>
+                                    <div class="form-row">
                                          <div class="form-group col-md-3">
                                             <label class="form-label">Department <span
                                                     class="text-danger">*</span></label>
@@ -671,8 +964,11 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
                                             </select>
                                             <div class="clearfix"></div>
                                         </div>
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
 
-
+                                     <?php emp_form_section_start('Documents & Attachments'); ?>
+                                    <div class="form-row">
                                         <div class="form-group col-md-12">
                                             <label class="form-label">Photo </label>
                                             <label class="custom-file">
@@ -739,18 +1035,11 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
 <?php }}} ?>
 </span>
 </div>
-                                     
-                                       
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
 
-                                       
-   
-
-</div>
-
-                                   
-                                       
-
-<div class="row">
+                                     <?php emp_form_section_start('Job Profile & Reporting'); ?>
+                                    <div class="form-row">
 
 <div class="form-group col-md-3">
                                             <label class="form-label">Designation <span class="text-danger">*</span></label>
@@ -1106,9 +1395,11 @@ if ($_GET['id'] == '') {
                                                 autocomplete="off"><?php echo $row7["Details"]; ?></textarea>
                                             <div class="clearfix"></div>
                                         </div>
-                                        
-                                        
-                                        
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
+
+                                     <?php emp_form_section_start('Attendance & Leave'); ?>
+                                    <div class="form-row">
                                        <div class="form-group col-md-2">
     <label class="form-label">In Time</label>
     <input type="time" id="InTime" name="OpenTime" class="form-control"
@@ -1178,271 +1469,21 @@ if ($_GET['id'] == '') {
                                             </select>
                                             <div class="clearfix"></div>
                                         </div>
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
 
-</div>
-                                    <br>
-                                    <?php if ($user_id == 2651 || $user_id == 2650) { ?>
-<div class="row">
-
-    <!-- Dashboard -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Dashboard</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (1,2,3,108,109,110,111,112,113,122,129)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-    
-    <!-- HR Dashboard -->
-    <div class="form-group col-md-12">
-        <label class="form-label">HR Dashboard</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (95)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Only For Admin -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Only For Admin</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (4,5,6,7,8,76,89,90,91,92,93)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- All Expenses (For Employee) -->
-    <div class="form-group col-md-12">
-        <label class="form-label">All Expenses (For Employee)</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (9,12,13,15,16)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Other Access -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Other Access</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (75,85,19,29,30,31,32,33,34,35,36,37,39,49,50,51,60,61,62,74,100,101,107,115,117,121,127,128,164)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Reports -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Reports</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (21,22,23,24,25,26,27,77,79,80,81,82,83,84,78,96,97,98,102,104,105,120,131,106,132,133,148,151,163)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Admin Request -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Admin Request</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (20,72,73,38,116,119,160)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Account Request -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Account Request</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (28,63,17,18,47,48,87,99)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- HR Request -->
-    <div class="form-group col-md-12">
-        <label class="form-label">HR Request</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (64,45,65,66,67,114,150)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Manager Request -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Manager Request</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (44,46,68,69,70,71,118,149,159)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Other Request -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Other Request</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (40,41,42,43,103,126)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-    
-   
-
-    <!-- User Accounts -->
-    <div class="form-group col-md-12">
-        <label class="form-label">User Accounts</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (52,53,54,55,56,57,58,59,94,123,124,125)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-    
-     <div class="form-group col-md-12">
-        <label class="form-label">HR Training</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (135,136,137,138,139)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-    
-         <div class="form-group col-md-12">
-        <label class="form-label">KPA</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (155,156,157,158)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-    <!-- Action -->
-    <div class="form-group col-md-12">
-        <label class="form-label">Action</label>
-    </div>
-    <?php
-    $sql33 = "SELECT * FROM tbl_option_cp WHERE id IN (10,11,14)";
-    $row33 = getList($sql33);
-    foreach ($row33 as $result) {
-    ?>
-    <div class="form-group col-md-4">
-        <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="Options[]" value="<?php echo $result['id']; ?>" <?php if (in_array($result["id"], $row7['Options'])) echo 'checked="checked"'; ?>>
-            <span class="custom-control-label"><?php echo $result['Name']; ?></span>
-        </label>
-    </div>
-    <?php } ?>
-
-   
-</div>
+                                    <?php if ($user_id == 22170 || $user_id == 2651 || $user_id == 2650) { ?>
+                                     <?php emp_form_section_start('Control Panel Menu Access', 'id="emp-menu-access"'); ?>
+<?php
+require_once __DIR__ . '/admin-sidebar-menu-permissions-render.php';
+$empMenuOptions = isset($row7['Options']) && is_array($row7['Options']) ? $row7['Options'] : array();
+?>
+    <?php emp_render_cp_menu_access($empMenuOptions); ?>
+                                     <?php emp_form_section_end(); ?>
 <?php } ?>
-<div class="row">
+
+                                     <?php emp_form_section_start('Employee Options', 'id="emp-options-access"'); ?>
+                                    <div class="form-row">
  <div class="form-group col-md-4">
         <label class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" name="InternshipEmp" value="1" <?php if ($row7['InternshipEmp'] == 1) echo 'checked="checked"'; ?>>
@@ -1515,8 +1556,8 @@ if ($_GET['id'] == '') {
         </label>
     </div>
 <?php } ?>
-     
-</div>
+                                    </div>
+                                     <?php emp_form_section_end(); ?>
                                     
                                     
                                     <!--<hr>
@@ -1542,11 +1583,8 @@ if ($_GET['id'] == '') {
                                     
                                   
                                     </div>-->
-                                    
-                                      </fieldset>
                                       
-                                      <fieldset>
- <legend>Assign Zone/Sub Zone/Franchise</legend>
+                                      <?php emp_form_section_start('Assign Zone / Sub Zone / Franchise'); ?>
 <div class="form-row">               
 <div class="form-group col-lg-12">
 <label class="form-label">Zone </label>
@@ -1599,13 +1637,12 @@ if ($_GET['id'] == '') {
 </div>
 
                             </div>  
-                                     </fieldset>        -
+                                     <?php emp_form_section_end(); ?>
                                      
 
 
 
- <fieldset>
- <legend>Assign Franchise For Vendor Expenses</legend>
+ <?php emp_form_section_start('Assign Franchise For Vendor Expenses'); ?>
  <div class="form-row">               
 <div class="form-group col-lg-12">
 <label class="form-label">Zone <span class="text-danger">*</span></label>
@@ -1691,10 +1728,9 @@ if (!empty($zoneIds) && is_array($zoneIds)) {
 </div>
 
 
-                                    </fieldset>
+                                    <?php emp_form_section_end(); ?>
         
-        <fieldset>
- <legend>Assign Franchise For NSO Vendor Expenses</legend>
+        <?php emp_form_section_start('Assign Franchise For NSO Vendor Expenses'); ?>
   <div class="form-row">               
 <div class="form-group col-lg-12">
 <label class="form-label">Zone <span class="text-danger">*</span></label>
@@ -1778,10 +1814,9 @@ if (!empty($zoneIds) && is_array($zoneIds)) {
 </div>
 
 
-                                    </fieldset>
+                                    <?php emp_form_section_end(); ?>
                                     
-         <fieldset>
- <legend>Assign Franchise For Attendace</legend>
+         <?php emp_form_section_start('Assign Franchise For Attendance'); ?>
 <div class="form-row">
 <div class="form-group col-lg-12">
 <label class="form-label">Zone</label>
@@ -1842,9 +1877,8 @@ if (!empty($attZoneIds) && is_array($attZoneIds)) {
 </select>
 </div>
 </div>
-</fieldset>                           
-    <fieldset>
- <legend>Assign Franchise Only For BDM</legend>
+<?php emp_form_section_end(); ?>                           
+    <?php emp_form_section_start('Assign Franchise Only For BDM'); ?>
 <div class="form-row">
 <div class="form-group col-lg-12">
 <label class="form-label">Zone</label>
@@ -1905,10 +1939,9 @@ if (!empty($bdmZoneIds) && is_array($bdmZoneIds)) {
 </select>
 </div>
 </div>
-</fieldset>                                
+<?php emp_form_section_end(); ?>                                
                                     
-<fieldset>
- <legend>Bank Account Detail</legend>
+<?php emp_form_section_start('Bank Account Detail'); ?>
 <div class="form-row">             
 <div class="form-group col-md-3">
 <label class="form-label">Account No </label>
@@ -1969,7 +2002,7 @@ if (!empty($bdmZoneIds) && is_array($bdmZoneIds)) {
 
 
                                     </div> 
-                                     </fieldset>
+                                     <?php emp_form_section_end(); ?>
                                      
                                      
                                    <!-- <fieldset>
@@ -2019,9 +2052,19 @@ if (!empty($bdmZoneIds) && is_array($bdmZoneIds)) {
 </fieldset>-->
 
                                      
-                                    <!-- <button id="growl-default" class="btn btn-default">Default</button> -->
-                                    <button type="submit" class="btn btn-primary btn-finish" id="submit">Save</button>
-                                    <span id="ageError" style="color:red; margin-left:10px; font-weight:500;"></span>
+                                        </div>
+                                        <div class="emp-wizard-actions">
+                                            <div>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" id="emp-wizard-prev"><i class="fa fa-chevron-left"></i> Previous</button>
+                                                <button type="button" class="btn btn-outline-primary btn-sm ml-1" id="emp-wizard-next">Next <i class="fa fa-chevron-right"></i></button>
+                                            </div>
+                                            <p class="emp-wizard-step-hint mb-0" id="emp-wizard-step-hint">Step 1 of 1</p>
+                                            <div>
+                                                <button type="submit" class="btn btn-primary btn-finish" id="submit">Save</button>
+                                                <span id="ageError" style="color:red; margin-left:10px; font-weight:500;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </form>
 
                                 <!-- Password policy (shown from Password field info icon) -->
@@ -2077,6 +2120,104 @@ if (!empty($bdmZoneIds) && is_array($bdmZoneIds)) {
 
     <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function () {
+
+    (function initEmployeeFormWizard() {
+        var form = document.getElementById('validation-form');
+        var nav = document.getElementById('emp-wizard-nav');
+        if (!form || !nav) return;
+
+        var sections = Array.prototype.slice.call(form.querySelectorAll('.emp-wizard-steps .emp-form-section'));
+        if (!sections.length) return;
+
+        var current = 0;
+        var prevBtn = document.getElementById('emp-wizard-prev');
+        var nextBtn = document.getElementById('emp-wizard-next');
+        var hintEl = document.getElementById('emp-wizard-step-hint');
+
+        function initSectionSelect2(sec) {
+            if (!sec || typeof jQuery === 'undefined' || !jQuery.fn.select2 || sec.getAttribute('data-s2-inited')) {
+                return;
+            }
+            jQuery(sec).find('select.select2-demo').each(function () {
+                var $t = jQuery(this);
+                if ($t.hasClass('select2-hidden-accessible')) {
+                    $t.select2('destroy');
+                }
+                if (!$t.parent().hasClass('position-relative')) {
+                    $t.wrap('<div class="position-relative"></div>');
+                }
+                $t.select2({
+                    placeholder: 'Select value',
+                    dropdownParent: $t.parent()
+                });
+            });
+            sec.setAttribute('data-s2-inited', '1');
+        }
+
+        function updateNavButtons() {
+            if (prevBtn) prevBtn.disabled = current <= 0;
+            if (nextBtn) nextBtn.disabled = current >= sections.length - 1;
+            if (hintEl) {
+                var title = sections[current].getAttribute('data-step-title') || '';
+                hintEl.textContent = 'Step ' + (current + 1) + ' of ' + sections.length + (title ? ' — ' + title : '');
+            }
+        }
+
+        function goToStep(index, scroll) {
+            if (index < 0 || index >= sections.length) return;
+            current = index;
+            sections.forEach(function (sec, i) {
+                sec.classList.toggle('is-active', i === current);
+            });
+            var navBtns = nav.querySelectorAll('.emp-wizard-nav-btn');
+            navBtns.forEach(function (btn, i) {
+                btn.classList.toggle('active', i === current);
+                btn.setAttribute('aria-selected', i === current ? 'true' : 'false');
+            });
+            initSectionSelect2(sections[current]);
+            updateNavButtons();
+            if (scroll !== false) {
+                var shell = form.querySelector('.emp-wizard-shell');
+                if (shell && shell.scrollIntoView) {
+                    shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        nav.innerHTML = '';
+        sections.forEach(function (sec, i) {
+            var title = sec.getAttribute('data-step-title') || ('Step ' + (i + 1));
+            var li = document.createElement('li');
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'emp-wizard-nav-btn' + (sec.classList.contains('is-active') ? ' active' : '');
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', sec.classList.contains('is-active') ? 'true' : 'false');
+            btn.setAttribute('data-step-index', String(i));
+            btn.innerHTML = '<span class="emp-wiz-num">' + (i + 1) + '</span><span class="emp-wiz-label">' + title + '</span>';
+            btn.addEventListener('click', function () {
+                goToStep(i);
+            });
+            li.appendChild(btn);
+            nav.appendChild(li);
+        });
+
+        var startIdx = sections.findIndex(function (s) { return s.classList.contains('is-active'); });
+        goToStep(startIdx >= 0 ? startIdx : 0, false);
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+                goToStep(current - 1);
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+                goToStep(current + 1);
+            });
+        }
+
+        window.empWizardGoToStep = goToStep;
+    })();
 
     const dobInput = document.getElementById("Dob");
     const submitBtn = document.getElementById("submit");
@@ -2286,7 +2427,28 @@ document.addEventListener("DOMContentLoaded", function () {
         //$(document).on("click", ".btn-finish", function(event){
         $('#validation-form').on('submit', function(e) {
             e.preventDefault();
-            if ($('#validation-form').valid()) {
+            var $form = $('#validation-form');
+            var validator = $form.data('validator');
+            var prevIgnore = validator ? validator.settings.ignore : null;
+            if (validator) {
+                validator.settings.ignore = '.emp-wizard-step-head-hidden, :disabled';
+            }
+            var isValid = $form.valid();
+            if (validator && prevIgnore !== null) {
+                validator.settings.ignore = prevIgnore;
+            }
+            if (!isValid) {
+                var $firstErr = $form.find('label.error').first().closest('.emp-form-section');
+                if (!$firstErr.length) {
+                    $firstErr = $form.find('.emp-form-section :input.error').first().closest('.emp-form-section');
+                }
+                if ($firstErr.length && typeof window.empWizardGoToStep === 'function') {
+                    var $all = $form.find('.emp-wizard-steps .emp-form-section');
+                    window.empWizardGoToStep($all.index($firstErr));
+                }
+                return;
+            }
+            if (isValid) {
 
                 $.ajax({
                     url: "ajax_files/ajax_employee.php",
