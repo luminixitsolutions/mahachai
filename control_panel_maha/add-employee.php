@@ -367,23 +367,45 @@ $Page = "Add-Employee";
                 
 
                 <?php 
-$id = $_GET['id'];
-$sql7 = "SELECT * FROM tbl_users WHERE id='$id'";
-$row7 = getRecord($sql7);
-$row7['Options'] = explode(',', $row7['Options2']);
-$row7['ExpCatId'] = explode(',', $row7['ExpCatId']);
-$row7['CocoFranchiseAccess'] = explode(',', $row7['CocoFranchiseAccess']);
-$row7['AssignFranchiseAttendance'] = explode(',', $row7['AssignFranchiseAttendance']);
-$row7['AssignFranchiseVedExp'] = explode(',', $row7['AssignFranchiseVedExp']);
-$row7['AssignFranchiseBdm'] = explode(',', $row7['AssignFranchiseBdm']);
-$row7['AssignFranchiseNsoVedExp'] = explode(',',$row7['AssignFranchiseNsoVedExp']);
-$row7['zone'] = explode(',', $row7['zone']);
+require_once __DIR__ . '/ajax_files/employee_salary_functions.php';
+maha_ensure_employee_salary_history_table();
+
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+if ($id) {
+    $sql7 = "SELECT * FROM tbl_users WHERE id='$id'";
+    $row7 = getRecord($sql7);
+} else {
+    $row7 = array();
+}
+if (!is_array($row7)) {
+    $row7 = array();
+}
+$row7['Options'] = explode(',', isset($row7['Options2']) ? (string) $row7['Options2'] : '');
+$row7['ExpCatId'] = explode(',', isset($row7['ExpCatId']) ? (string) $row7['ExpCatId'] : '');
+$row7['CocoFranchiseAccess'] = explode(',', isset($row7['CocoFranchiseAccess']) ? (string) $row7['CocoFranchiseAccess'] : '');
+$row7['AssignFranchiseAttendance'] = explode(',', isset($row7['AssignFranchiseAttendance']) ? (string) $row7['AssignFranchiseAttendance'] : '');
+$row7['AssignFranchiseVedExp'] = explode(',', isset($row7['AssignFranchiseVedExp']) ? (string) $row7['AssignFranchiseVedExp'] : '');
+$row7['AssignFranchiseBdm'] = explode(',', isset($row7['AssignFranchiseBdm']) ? (string) $row7['AssignFranchiseBdm'] : '');
+$row7['AssignFranchiseNsoVedExp'] = explode(',', isset($row7['AssignFranchiseNsoVedExp']) ? (string) $row7['AssignFranchiseNsoVedExp'] : '');
+$row7['zone'] = explode(',', isset($row7['zone']) ? (string) $row7['zone'] : '');
 
 
-$row7['vedzones'] = explode(',', $row7['vedzones']);
-$row7['nsovedzones'] = explode(',', $row7['nsovedzones']);
-$row7['vedSubzones'] = explode(',', $row7['vedSubzones']);
-$row7['nsovedSubzones'] = explode(',', $row7['nsovedSubzones']);
+$row7['vedzones'] = explode(',', isset($row7['vedzones']) ? (string) $row7['vedzones'] : '');
+$row7['nsovedzones'] = explode(',', isset($row7['nsovedzones']) ? (string) $row7['nsovedzones'] : '');
+$row7['vedSubzones'] = explode(',', isset($row7['vedSubzones']) ? (string) $row7['vedSubzones'] : '');
+$row7['nsovedSubzones'] = explode(',', isset($row7['nsovedSubzones']) ? (string) $row7['nsovedSubzones'] : '');
+
+$salaryEffectiveFromDefault = date('Y-m-d');
+if ($id) {
+    $latestSalaryEffectiveFrom = maha_get_latest_active_salary_effective_from((int) $id);
+    if ($latestSalaryEffectiveFrom) {
+        $salaryEffectiveFromDefault = $latestSalaryEffectiveFrom;
+    } elseif (!empty($row7['JoinDate']) && $row7['JoinDate'] >= '1900-01-01') {
+        $salaryEffectiveFromDefault = $row7['JoinDate'];
+    }
+} elseif (!empty($row7['JoinDate']) && $row7['JoinDate'] >= '1900-01-01') {
+    $salaryEffectiveFromDefault = $row7['JoinDate'];
+}
 
 $sql71 = "SELECT * FROM tbl_users2 WHERE UserId='$id'";
 $row71 = getRecord($sql71);
@@ -843,6 +865,13 @@ function emp_form_section_end() {
                                                 autocomplete="off" readonly>
                                             <div class="clearfix"></div>
                                         </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="form-label">Salary Effective From <span class="text-danger">*</span></label>
+                                            <input type="date" name="SalaryEffectiveFrom" id="SalaryEffectiveFrom" class="form-control"
+                                                value="<?php echo htmlspecialchars($salaryEffectiveFromDefault, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                            <div class="clearfix"></div>
+                                        </div>
                                         <?php } ?>
                                         <!--<div class="form-group col-md-3">
                                             <label class="form-label">Credit Salary Status <span class="text-danger">*</span></label>
@@ -1222,6 +1251,32 @@ if ($_GET['id'] == '') {
 <div class="clearfix"></div>
 </div>
 
+<div class="form-group col-md-4">
+<label class="form-label">Partial Reporting</label>
+<select class="select2-demo form-control" name="PartialReporting" id="PartialReporting">
+<option value="0" <?php if (empty($row71['PartialReporting']) || (int) $row71['PartialReporting'] === 0) { ?> selected<?php } ?>>None</option>
+<?php
+$currentEmpId = (int) ($_GET['id'] ?? 0);
+$sqlPartialReporting = "SELECT id, Fname, CustomerId FROM tbl_users tu
+    WHERE tu.Roll NOT IN(1,5,55,9,22,23,63,3) AND tu.OtherEmp=0 AND tu.Status=1 AND tu.cofofr=0";
+if ($currentEmpId > 0) {
+    $sqlPartialReporting .= " AND tu.id != '$currentEmpId'";
+}
+$sqlPartialReporting .= ' ORDER BY tu.Fname';
+$rowPartialReporting = getList($sqlPartialReporting);
+foreach ($rowPartialReporting as $result) {
+    $partialId = (int) $result['id'];
+    $partialLabel = trim($result['Fname'] ?? '');
+    if (!empty($result['CustomerId'])) {
+        $partialLabel .= ' (' . $result['CustomerId'] . ')';
+    }
+    ?>
+<option value="<?php echo $partialId; ?>" <?php if ((int) ($row71['PartialReporting'] ?? 0) === $partialId) { ?> selected<?php } ?>><?php echo htmlspecialchars($partialLabel, ENT_QUOTES, 'UTF-8'); ?></option>
+<?php } ?>
+</select>
+<div class="clearfix"></div>
+</div>
+
  <?php if($user_id == 2651 || $user_id == 2650 || $user_id == 22170 || $user_id == 2799){?>
 <div class="form-group col-md-3">
 <label class="form-label"> Under By Franchise</label>
@@ -1439,14 +1494,14 @@ if ($_GET['id'] == '') {
                                         
                                         <div class="form-group col-md-1">
     <label class="form-label">CL <span class="text-danger">*</span></label>
-    <input type="text" id="Cl" name="Cl" class="form-control js-num-only"
-           inputmode="numeric" autocomplete="off" value="<?php echo $row71["Cl"]; ?>" required>
+    <input type="text" id="Cl" name="Cl" class="form-control js-decimal-only"
+           inputmode="decimal" autocomplete="off" value="<?php echo $row71["Cl"]; ?>" required>
 </div>
 
 <div class="form-group col-md-1">
     <label class="form-label">EL <span class="text-danger">*</span></label>
-    <input type="text" id="El" name="El" value="<?php echo $row71["El"]; ?>" class="form-control js-num-only"
-           inputmode="numeric" autocomplete="off" required>
+    <input type="text" id="El" name="El" value="<?php echo $row71["El"]; ?>" class="form-control js-decimal-only"
+           inputmode="decimal" autocomplete="off" required>
 </div>
 
 <div class="form-group col-md-2">
@@ -2897,7 +2952,7 @@ if (AadharNo.length !== 12) {
         var isRtl = $('body').attr('dir') === 'rtl' || $('html').attr('dir') === 'rtl';
         $.growl.error({
             title: 'Error',
-            message: 'Email Id / Phone No Already Exists',
+            message: 'Phone No Already Exists With Active Employee!',
             location: isRtl ? 'tl' : 'tr'
         });
     }
@@ -2911,21 +2966,46 @@ if (AadharNo.length !== 12) {
         });
     }
 
-    /** Mobile: text inputs, digits only, max 10. Amounts (CL/EL/Petty): text, digits only. */
+    /** Mobile: text inputs, digits only, max 10. CL/EL: decimals allowed. */
     $(function () {
+        function syncSalaryEffectiveFromFromJoinDate() {
+            if (($('#userid').val() || '').toString().trim() !== '') {
+                return;
+            }
+            var joinDate = ($('input[name="JoinDate"]').val() || '').trim();
+            if (joinDate) {
+                $('#SalaryEffectiveFrom').val(joinDate);
+            }
+        }
+
+        $('input[name="JoinDate"]').on('change input', syncSalaryEffectiveFromFromJoinDate);
+        syncSalaryEffectiveFromFromJoinDate();
+
         function cleanPhone10(el) {
             el.value = (el.value || '').replace(/\D/g, '').substring(0, 10);
         }
         function cleanDigits(el) {
             el.value = (el.value || '').replace(/\D/g, '');
         }
+        function cleanDecimal(el) {
+            var v = (el.value || '').replace(/[^\d.]/g, '');
+            var dot = v.indexOf('.');
+            if (dot !== -1) {
+                v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
+            }
+            el.value = v;
+        }
         $('.js-phone-10').each(function () { cleanPhone10(this); });
         $('.js-num-only').each(function () { cleanDigits(this); });
+        $('.js-decimal-only').each(function () { cleanDecimal(this); });
         $(document).on('input', '.js-phone-10', function () {
             cleanPhone10(this);
         });
         $(document).on('input', '.js-num-only', function () {
             cleanDigits(this);
+        });
+        $(document).on('input', '.js-decimal-only', function () {
+            cleanDecimal(this);
         });
     });
 

@@ -40,16 +40,6 @@ $sidenavClass = $mahaMenuVertical
 
 <?php if ($mahaMenuVertical) { ?>
 <div id="layout-sidenav" class="<?php echo $sidenavClass . ' ' . $sidenavBgClass; ?>">
-     <div class="app-brand demo" title="<?php echo isset($LoginUserName) ? htmlspecialchars('Logged in as: ' . $LoginUserName, ENT_QUOTES, 'UTF-8') : 'Maha Chai'; ?>">
-                    <span class="app-brand-logo demo">
-                        <a href="menu-dashboard.php" title="<?php echo isset($LoginUserName) ? htmlspecialchars('Logged in as: ' . $LoginUserName, ENT_QUOTES, 'UTF-8') : 'Home'; ?>"><img src="logo5.png" alt="Brand Logo" class="img-fluid" style="width: 48px;"></a>
-                    </span>
-                    <span class="app-brand-text demo font-weight-normal ml-2">Maha Chai</span>
-                    <a href="javascript:" class="layout-sidenav-toggle sidenav-link text-large ml-auto d-none d-lg-inline-block">
-                        <i class="ion ion-md-menu align-middle"></i>
-                    </a>
-                </div>
-                <div class="sidenav-divider mt-0"></div>
     <ul class="sidenav-inner py-1">
 <?php } else { ?>
 <div class="sidenav <?php echo $sidenavBgClass; ?>">
@@ -90,25 +80,20 @@ include 'admin-sidebar-menu-organized.php';
     width: 15.625rem;
     max-width: 15.625rem;
     flex: 0 0 15.625rem;
-    height: 100%;
-    max-height: 100%;
-    min-height: 0;
+    align-self: stretch;
+    min-height: 100%;
+    height: auto;
+    max-height: none;
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
 }
-#layout-sidenav.maha-vertical-sidenav .app-brand.demo {
-    display: flex !important;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 0.85rem 1rem;
-}
-#layout-sidenav.maha-vertical-sidenav .app-brand-text {
-    font-size: 1.05rem;
-    font-weight: 600;
-}
 #layout-sidenav.maha-vertical-sidenav .sidenav-inner {
     flex-direction: column !important;
+    padding-top: 0.5rem;
+    min-height: 100%;
+    box-sizing: border-box;
+    padding-bottom: 1rem;
 }
 #layout-sidenav.maha-vertical-sidenav .sidenav-inner > .sidenav-item,
 #layout-sidenav.maha-vertical-sidenav .sidenav-inner > .sidenav-item > .sidenav-link {
@@ -134,8 +119,12 @@ include 'admin-sidebar-menu-organized.php';
 #layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu > .sb-flyout-submenu > .sb-submenu-toggle {
     padding-left: 2.25rem !important;
 }
-#layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu .sidenav-menu .sidenav-link {
+#layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu .sidenav-menu .sidenav-link,
+#layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu .sidenav-menu .sb-flyout-submenu > .sb-submenu-toggle {
     padding-left: 3rem !important;
+}
+#layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu .sidenav-menu .sidenav-menu .sidenav-link {
+    padding-left: 3.75rem !important;
 }
 #layout-sidenav.maha-vertical-sidenav .sb-flyout-submenu > .sb-submenu-toggle {
     display: flex !important;
@@ -149,9 +138,18 @@ include 'admin-sidebar-menu-organized.php';
     display: none !important;
     content: none !important;
 }
-#layout-sidenav.maha-vertical-sidenav .sidenav-link > div {
+#layout-sidenav.maha-vertical-sidenav .sidenav-link > div,
+#layout-sidenav.maha-vertical-sidenav .sidenav-toggle > div,
+#layout-sidenav.maha-vertical-sidenav .sb-submenu-toggle > div {
     opacity: 1 !important;
     visibility: visible !important;
+    color: inherit !important;
+}
+#layout-sidenav.maha-vertical-sidenav > .sidenav-inner > .sidenav-item.open > .sidenav-toggle,
+#layout-sidenav.maha-vertical-sidenav .sidenav-item.open > .sidenav-toggle,
+#layout-sidenav.maha-vertical-sidenav .sb-flyout-submenu.open > .sb-submenu-toggle {
+    background: var(--maha-accent) !important;
+    color: #fff !important;
 }
 #layout-sidenav.maha-vertical-sidenav .sidenav-item > .sidenav-menu {
     position: static !important;
@@ -217,22 +215,35 @@ include 'admin-sidebar-menu-organized.php';
     overflow: visible !important;
 }
 
-/* Menu scroll zone — clip horizontal overflow so text does not bleed past arrows */
+.sidenav.bg-dark,
+.sidenav.bg-white {
+    overflow: visible !important;
+}
+/* Menu scroll zone — allow dropdown below navbar (beats theme .sidenav-horizontal-wrapper { overflow:hidden }) */
+.sidenav-horizontal .sidenav-horizontal-wrapper,
+.sidenav-horizontal .sidenav-inner,
+#layout-sidenav .sidenav-horizontal-wrapper,
+#layout-sidenav .sidenav-inner {
+    overflow: visible !important;
+}
 .sidenav-horizontal .sidenav-horizontal-wrapper {
-    overflow: hidden !important;
     flex: 1 1 0 !important;
     width: auto !important;
     min-width: 0 !important;
     position: relative;
-    isolation: isolate;
-}
-.sidenav-horizontal .sidenav-inner {
-    overflow: hidden !important;
 }
 .layout-navbar .navbar-collapse,
 .layout-navbar,
 #layout-sidenav.sidenav-horizontal {
     overflow: visible !important;
+}
+.layout-navbar {
+    position: relative;
+    z-index: 1090;
+}
+#layout-sidenav.sidenav-horizontal {
+    position: relative;
+    z-index: 1090;
 }
 /* Sticky scroll arrows — fixed width, sit above scroll track to mask edge bleed */
 .sidenav-horizontal .sidenav-horizontal-prev,
@@ -268,31 +279,38 @@ include 'admin-sidebar-menu-organized.php';
 /* ── Top-level dropdown (opens below nav bar) ── */
 .sidenav-horizontal .sidenav-inner > .sidenav-item {
     position: relative;
+    overflow: visible !important;
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu {
     display: none;
     flex-direction: column;
     position: absolute !important;
     top: 100% !important;
-    min-width: 240px;
+    left: 0 !important;
+    right: auto !important;
+    min-width: 240px !important;
+    max-width: 320px;
+    width: max-content;
     max-height: 75vh;
-    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
     background: #0F5A4A !important;
     border-radius: 0 0 4px 4px;
     padding: 0.35rem 0;
-    z-index: 1050;
+    z-index: 99999 !important;
     box-sizing: border-box;
-}
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu:not(.sb-top-menu-fixed) {
-    left: 0 !important;
-    right: auto !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-top-menu-fixed {
-    position: fixed !important;
-    z-index: 1050 !important;
+    position: absolute !important;
+    top: 100% !important;
+    z-index: 1095 !important;
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-menu-align-right:not(.sb-top-menu-fixed) {
+.sidenav-horizontal .sidenav-inner > .sidenav-item.sb-menu-align-right > .sidenav-menu {
     left: auto !important;
     right: 0 !important;
 }
@@ -300,13 +318,14 @@ include 'admin-sidebar-menu-organized.php';
     overflow-y: auto !important;
     overflow-x: visible !important;
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling > .sidenav-item,
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling > .sb-flyout-submenu {
-    flex-shrink: 0;
-}
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu > .sidenav-item {
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu > .sidenav-item,
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu > .sb-flyout-submenu {
     background: #0F5A4A !important;
     flex-shrink: 0;
+    width: 100%;
+    min-width: 240px;
+    max-width: 320px;
+    box-sizing: border-box;
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar {
     width: 6px;
@@ -318,17 +337,33 @@ include 'admin-sidebar-menu-organized.php';
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.15);
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item:hover > .sidenav-menu,
 .sidenav-horizontal .sidenav-inner > .sidenav-item.open > .sidenav-menu {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item:not(:hover):not(.open) > .sidenav-menu {
+.sidenav-horizontal .sidenav-inner > .sidenav-item:not(.open) > .sidenav-menu {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+.sidenav-horizontal .sidenav-inner > .sidenav-item:not(.open) > .sidenav-menu.sb-top-menu-fixed {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+body > .sb-flyout-portal:not(.sb-flyout-open) {
+    display: none !important;
+    pointer-events: none !important;
 }
 
 /* ── Flyout parent row (e.g. Employee Master >) ── */
 .sidenav-horizontal .sb-flyout-submenu {
     position: relative !important;
+    width: 100%;
 }
 .sidenav-horizontal .sb-flyout-submenu > .sb-submenu-toggle {
     color: #fff !important;
@@ -342,6 +377,29 @@ include 'admin-sidebar-menu-organized.php';
     align-items: center;
     gap: 0.35rem;
     white-space: nowrap;
+    position: relative;
+}
+.sidenav-horizontal .sb-flyout-submenu.open:not(.sb-flyout-left) > .sb-submenu-toggle::after,
+.sb-flyout-portal .sb-flyout-submenu.open:not(.sb-flyout-left) > .sb-submenu-toggle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -20px;
+    width: 20px;
+    height: 100%;
+    background: transparent;
+    pointer-events: auto;
+}
+.sidenav-horizontal .sb-flyout-submenu.open.sb-flyout-left > .sb-submenu-toggle::after,
+.sb-flyout-portal .sb-flyout-submenu.open.sb-flyout-left > .sb-submenu-toggle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 20px;
+    height: 100%;
+    background: transparent;
+    pointer-events: auto;
 }
 .sidenav-horizontal .sb-flyout-submenu > .sb-submenu-toggle:hover,
 .sidenav-horizontal .sb-flyout-submenu.open > .sb-submenu-toggle,
@@ -355,85 +413,91 @@ include 'admin-sidebar-menu-organized.php';
     margin-left: auto;
 }
 
-/* ── Override theme: nested menus must NOT stack inline (position:static) ── */
+/* Nested flyout panels — beside parent row (absolute), not over parent list */
 .sidenav-horizontal .sidenav-menu .sidenav-menu.sb-flyout-panel {
     position: absolute !important;
     left: 100% !important;
     top: 0 !important;
-    width: auto !important;
-    min-width: 240px;
-    max-width: 320px;
-    max-height: none !important;
-    overflow: visible !important;
-    margin: 0 !important;
+    right: auto !important;
+    width: max-content !important;
+    min-width: 240px !important;
+    max-width: 320px !important;
+    max-height: 75vh;
+    overflow-x: visible !important;
+    overflow-y: auto !important;
+    margin: 0 0 0 2px !important;
     padding: 0.35rem 0 !important;
     background: #0F5A4A !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
     border-radius: 4px;
-    z-index: 1060 !important;
+    z-index: 1100 !important;
     list-style: none;
     flex-direction: column !important;
     display: none !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
 }
 .sidenav-horizontal .sb-flyout-panel .sb-flyout-panel {
-    z-index: 1070 !important;
+    z-index: 1105 !important;
 }
 .sidenav-horizontal .sb-flyout-panel .sb-flyout-panel .sb-flyout-panel {
-    z-index: 1080 !important;
+    z-index: 1110 !important;
 }
-.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed {
+/* Portaled / fixed flyout when parent scroll container would clip */
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed,
+.sb-flyout-portal.sb-flyout-panel.sb-flyout-nested-fixed {
     position: fixed !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
     display: none !important;
     margin: 0 !important;
+    min-width: 240px !important;
+    max-width: 320px !important;
+    width: max-content !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
     border-radius: 4px;
+    z-index: 1100 !important;
 }
-.sidenav-horizontal .sb-flyout-submenu:hover > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed,
-.sidenav-horizontal .sb-flyout-submenu.open > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed {
+.sidenav-horizontal .sb-flyout-submenu.open > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed,
+.sb-flyout-portal.sb-flyout-panel.sb-flyout-open.sb-flyout-nested-fixed {
     display: flex !important;
 }
 
-/* Show flyout on hover or click only */
-.sidenav-horizontal .sb-flyout-submenu:hover > .sidenav-menu.sb-flyout-panel,
+/* Show flyout only while branch is open */
 .sidenav-horizontal .sb-flyout-submenu.open > .sidenav-menu.sb-flyout-panel {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+.sidenav-horizontal .sb-flyout-submenu:not(.open) > .sidenav-menu.sb-flyout-panel,
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu .sb-flyout-submenu:not(.open) > .sidenav-menu.sb-flyout-panel {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.sb-flyout-portal .sb-flyout-submenu.open > .sidenav-menu.sb-flyout-panel {
+    display: flex !important;
+}
+.sb-flyout-portal .sb-flyout-submenu:not(.open) > .sidenav-menu.sb-flyout-panel {
+    display: none !important;
 }
 
 .sb-flyout-portal .sb-flyout-submenu {
     position: relative !important;
 }
-.sb-flyout-portal .sb-flyout-submenu:hover > .sidenav-menu.sb-flyout-panel,
-.sb-flyout-portal .sb-flyout-submenu.open > .sidenav-menu.sb-flyout-panel,
-.sb-flyout-portal .sb-flyout-submenu.sb-flyout-pinned > .sidenav-menu.sb-flyout-panel {
-    display: flex !important;
-}
-.sb-flyout-portal .sb-flyout-submenu:not(:hover):not(.open):not(.sb-flyout-pinned) > .sidenav-menu.sb-flyout-panel {
-    display: none !important;
-}
-
-.sb-flyout-portal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed {
-    position: fixed !important;
-    left: auto !important;
-    top: auto !important;
-    min-width: 240px;
-    background: #0F5A4A !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
-    border-radius: 4px;
-    z-index: 1090 !important;
-}
-
-/* Keep top dropdown open while a flyout is pinned */
-.sidenav-horizontal .sidenav-inner > .sidenav-item.sb-menu-pinned > .sidenav-menu {
-    display: flex !important;
-}
-
-/* Top-level flyouts portaled to body — visible only while open */
 .sb-flyout-portal.sb-flyout-panel {
     position: fixed !important;
     display: none !important;
     flex-direction: column !important;
-    min-width: 240px;
-    max-width: 320px;
+    min-width: 240px !important;
+    max-width: 320px !important;
+    width: max-content !important;
     max-height: 75vh;
     overflow-y: auto;
     overflow-x: visible;
@@ -442,12 +506,37 @@ include 'admin-sidebar-menu-organized.php';
     background: #0F5A4A !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
     border-radius: 4px;
-    z-index: 1080 !important;
+    z-index: 1100 !important;
     list-style: none;
     box-sizing: border-box;
 }
 .sb-flyout-portal.sb-flyout-panel.sb-flyout-open {
     display: flex !important;
+}
+/* Invisible hover bridge between parent row and flyout panel (prevents menu closing in the gap) */
+.sb-flyout-portal.sb-flyout-panel.sb-flyout-open::before,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 16px;
+    height: 100%;
+    background: transparent;
+    pointer-events: auto;
+}
+.sb-flyout-portal.sb-flyout-panel.sb-flyout-open::before {
+    left: -16px;
+}
+.sidenav-horizontal .sb-flyout-submenu:not(.sb-flyout-left) > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::before {
+    left: -16px;
+}
+.sidenav-horizontal .sb-flyout-submenu.sb-flyout-left > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::before {
+    left: auto;
+    right: -16px;
+}
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Portaled flyout links — must not depend on .sidenav-horizontal ancestor */
@@ -545,10 +634,9 @@ include 'admin-sidebar-menu-organized.php';
     transform: scaleX(-1);
 }
 
-/* Never show flyout when parent is closed */
-.sidenav-horizontal .sb-flyout-submenu:not(:hover):not(.open) > .sidenav-menu.sb-flyout-panel,
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-top-menu-fixed .sb-flyout-submenu:not(:hover):not(.open) > .sidenav-menu.sb-flyout-panel {
-    display: none !important;
+.sb-flyout-portal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel {
+    min-width: 240px !important;
+    max-width: 320px !important;
 }
 
 /* Links inside flyout box */
@@ -579,8 +667,7 @@ include 'admin-sidebar-menu-organized.php';
     text-decoration: none !important;
 }
 .sidenav-horizontal .sb-flyout-panel .sb-flyout-submenu > .sb-submenu-toggle:hover,
-.sidenav-horizontal .sb-flyout-panel .sb-flyout-submenu.open > .sb-submenu-toggle,
-.sidenav-horizontal .sb-flyout-panel .sb-flyout-submenu:hover > .sb-submenu-toggle {
+.sidenav-horizontal .sb-flyout-panel .sb-flyout-submenu.open > .sb-submenu-toggle {
     background: rgba(255, 255, 255, 0.1) !important;
     color: #fff !important;
 }
@@ -605,8 +692,56 @@ include 'admin-sidebar-menu-organized.php';
     if (document.documentElement.classList.contains('maha-menu-vertical')) {
         return;
     }
+
     var sidenav = document.getElementById('layout-sidenav');
     if (!sidenav) return;
+
+    var STATE_CLASSES = ['open', 'show', 'active', 'sb-menu-pinned', 'sb-flyout-pinned'];
+    var UI_CLASSES = STATE_CLASSES.concat([
+        'sb-flyout-open', 'sb-flyout-nested-fixed', 'sb-top-menu-fixed',
+        'sb-dropdown-scrolling', 'sb-menu-align-right', 'sb-flyout-left'
+    ]);
+    var MENU_STYLE_PROPS = [
+        'top', 'left', 'right', 'min-width', 'max-width', 'width', 'max-height', 'overflow', 'overflow-y',
+        'visibility', 'display', 'position', 'z-index', 'pointer-events', 'margin'
+    ];
+    var MENU_Z_BASE = 1095;
+    var FLYOUT_Z_BASE = 1100;
+    var lastPointerX = null;
+    var lastPointerY = null;
+
+    function stripState(el) {
+        if (!el || !el.classList) return;
+        STATE_CLASSES.forEach(function (cls) {
+            el.classList.remove(cls);
+        });
+    }
+
+    function stripUiClasses(el) {
+        if (!el || !el.classList) return;
+        UI_CLASSES.forEach(function (cls) {
+            el.classList.remove(cls);
+        });
+    }
+
+    function clearMenuInlineStyles(el) {
+        if (!el || !el.style) return;
+        MENU_STYLE_PROPS.forEach(function (prop) {
+            el.style.removeProperty(prop);
+        });
+    }
+
+    function getFlyoutAncestorChain(item) {
+        var chain = [];
+        var el = item;
+        while (el && el !== sidenav) {
+            if (el.classList && el.classList.contains('sb-flyout-submenu')) {
+                chain.unshift(el);
+            }
+            el = el.parentElement;
+        }
+        return chain;
+    }
 
     function getPanel(item) {
         return item._sbFlyoutPanel || item.querySelector(':scope > .sb-flyout-panel');
@@ -616,20 +751,58 @@ include 'admin-sidebar-menu-organized.php';
         return el ? el.closest('.sidenav-inner > .sidenav-item') : null;
     }
 
-    var lastPointerX = null;
-    var lastPointerY = null;
-    var hoverCloseTimer = null;
-
-    function isInsideMenuSystem(el) {
+    function isNavZone(el) {
         if (!el || !el.closest) return false;
-        return !!el.closest(
-            '#layout-sidenav, .sidenav, .sidenav-horizontal, ' +
-            '.sidenav-inner > .sidenav-item, .sidenav-menu, ' +
-            '.sb-flyout-submenu, .sb-flyout-panel, body > .sb-flyout-portal'
+        if (el.closest('#layout-sidenav')) return true;
+        if (el.closest('body > .sb-flyout-portal.sb-flyout-panel.sb-flyout-open')) return true;
+        if (el.closest('.sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed')) return true;
+        return false;
+    }
+
+    function isPointerOverOpenFlyout(x, y) {
+        var hit = document.elementFromPoint(x, y);
+        if (!hit || !hit.closest) return false;
+        var topOpen = hit.closest('.sidenav-inner > .sidenav-item.open');
+        if (!topOpen) return false;
+        return !!hit.closest(
+            '.sb-flyout-submenu.open, .sb-flyout-portal.sb-flyout-open, ' +
+            '.sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed, ' +
+            '.sidenav-inner > .sidenav-item.open > .sidenav-menu'
         );
     }
 
-    function restoreAllPortaledFlyouts() {
+    function isNavigableLink(link) {
+        if (!link || !link.classList) return false;
+        if (link.classList.contains('sb-submenu-toggle') || link.classList.contains('sidenav-toggle')) {
+            return false;
+        }
+        var href = (link.getAttribute('href') || '').trim();
+        return href && href !== '#' && href.indexOf('javascript:') !== 0;
+    }
+
+    function getFlyoutOwner(panel) {
+        if (!panel) return null;
+        if (panel._sbFlyoutOwner) return panel._sbFlyoutOwner;
+        var parent = panel.parentElement;
+        if (parent && parent.classList && parent.classList.contains('sb-flyout-submenu')) {
+            return parent;
+        }
+        return null;
+    }
+
+    function isFlyoutRelated(item, relatedTarget) {
+        if (!item || !relatedTarget) return false;
+        if (item === relatedTarget || item.contains(relatedTarget)) return true;
+        var panel = getPanel(item);
+        if (panel && (panel === relatedTarget || panel.contains(relatedTarget))) return true;
+        if (relatedTarget.closest) {
+            if (relatedTarget.closest('.sb-flyout-submenu') === item) return true;
+            if (panel && relatedTarget.closest('.sb-flyout-panel') === panel) return true;
+        }
+        return false;
+    }
+
+    function cleanupOrphanPortals() {
         document.querySelectorAll('body > .sb-flyout-portal').forEach(function (panel) {
             var owner = panel._sbFlyoutOwner;
             if (owner) {
@@ -640,231 +813,244 @@ include 'admin-sidebar-menu-organized.php';
         });
     }
 
-    function closeAllMenus() {
-        if (hoverCloseTimer) {
-            window.clearTimeout(hoverCloseTimer);
-            hoverCloseTimer = null;
+    function forceRestoreAllBodyPortals() {
+        var owners = [];
+        sidenav.querySelectorAll('.sb-flyout-submenu').forEach(function (item) {
+            if (item._sbFlyoutPanel) {
+                owners.push(item);
+            }
+        });
+        owners.forEach(function (item) {
+            restoreFlyoutPortal(item);
+        });
+        document.querySelectorAll('body > .sb-flyout-portal').forEach(function (panel) {
+            stripUiClasses(panel);
+            clearMenuInlineStyles(panel);
+            panel.classList.remove('sb-flyout-portal');
+            if (panel.parentNode === document.body) {
+                panel.remove();
+            }
+        });
+    }
+
+    function restoreAllPortaledFlyouts() {
+        forceRestoreAllBodyPortals();
+        cleanupOrphanPortals();
+    }
+
+    function resetTopMenu(item) {
+        var menu = item.querySelector(':scope > .sidenav-menu');
+        stripUiClasses(item);
+        if (!menu) return;
+        stripUiClasses(menu);
+        clearMenuInlineStyles(menu);
+    }
+
+    function restoreFlyoutPortal(item) {
+        var panel = item._sbFlyoutPanel || item.querySelector(':scope > .sb-flyout-panel');
+        if (!panel || !panel.classList.contains('sb-flyout-portal')) return;
+
+        stripUiClasses(panel);
+        clearMenuInlineStyles(panel);
+        panel.classList.remove('sb-flyout-portal');
+
+        if (item._sbFlyoutAnchor && item._sbFlyoutAnchor.parentNode) {
+            item._sbFlyoutAnchor.parentNode.insertBefore(panel, item._sbFlyoutAnchor.nextSibling);
         }
 
+        item._sbFlyoutPanel = null;
+        if (panel._sbFlyoutOwner === item) {
+            panel._sbFlyoutOwner = null;
+        }
+    }
+
+    function resetFlyoutSide(item) {
+        stripUiClasses(item);
+        var panel = getPanel(item);
+        if (panel) {
+            stripUiClasses(panel);
+            clearMenuInlineStyles(panel);
+        }
+        restoreFlyoutPortal(item);
+        item._sbFlyoutPanel = null;
+    }
+
+    function purgeAllMenuUI() {
+        forceRestoreAllBodyPortals();
+
         sidenav.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (el) {
-            el.classList.remove('open', 'sb-menu-pinned', 'active', 'show');
             resetTopMenu(el);
+            stripState(el);
         });
 
         sidenav.querySelectorAll('.sb-flyout-submenu').forEach(function (el) {
-            el.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
             resetFlyoutSide(el);
+            stripState(el);
         });
 
-        restoreAllPortaledFlyouts();
+        document.querySelectorAll(
+            '.sb-flyout-open, .sb-flyout-nested-fixed, .sb-top-menu-fixed, .sb-flyout-portal'
+        ).forEach(function (el) {
+            stripUiClasses(el);
+            clearMenuInlineStyles(el);
+        });
     }
 
-    function closeOtherTopMenus(activeItem) {
-        sidenav.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (el) {
-            if (activeItem && el === activeItem) return;
-            el.classList.remove('open', 'sb-menu-pinned', 'active', 'show');
-            resetTopMenu(el);
-            el.querySelectorAll('.sb-flyout-submenu.open').forEach(function (fly) {
-                fly.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
-                resetFlyoutSide(fly);
-            });
+    function closeFlyoutBranch(item) {
+        if (!item) return;
+        item.querySelectorAll('.sb-flyout-submenu').forEach(function (nested) {
+            closeFlyoutBranch(nested);
         });
+        item.classList.remove('open', 'show', 'active', 'sb-flyout-left');
+        hideFlyoutPanel(item);
+        restoreFlyoutPortal(item);
+        item._sbFlyoutPanel = null;
     }
 
     function closeFlyoutDescendants(item) {
         if (!item || !item.querySelectorAll) return;
-        item.querySelectorAll(':scope > .sb-flyout-submenu.open').forEach(function (nested) {
-            closeFlyoutDescendants(nested);
-            nested.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
-            resetFlyoutSide(nested);
+        item.querySelectorAll(':scope > .sb-flyout-submenu').forEach(function (nested) {
+            closeFlyoutBranch(nested);
         });
     }
 
     function closeSiblingFlyouts(item) {
         var parent = item && item.parentElement;
         if (!parent || !parent.querySelectorAll) return;
-        parent.querySelectorAll(':scope > .sb-flyout-submenu.open').forEach(function (el) {
+        parent.querySelectorAll(':scope > .sb-flyout-submenu').forEach(function (el) {
             if (el === item) return;
-            closeFlyoutDescendants(el);
-            el.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
-            resetFlyoutSide(el);
+            closeFlyoutBranch(el);
         });
     }
 
-    function scheduleCloseHoverMenus() {
-        if (hoverCloseTimer) {
-            window.clearTimeout(hoverCloseTimer);
-        }
-        hoverCloseTimer = window.setTimeout(closeHoverMenus, 120);
+    function showTopMenuPanel(item) {
+        var menu = item && item.querySelector(':scope > .sidenav-menu');
+        if (!menu) return;
+        menu.style.setProperty('display', 'flex', 'important');
+        menu.style.setProperty('visibility', 'visible', 'important');
+        menu.style.setProperty('opacity', '1', 'important');
+        menu.style.setProperty('pointer-events', 'auto', 'important');
     }
 
-    function closeHoverMenus() {
-        hoverCloseTimer = null;
-        if (lastPointerX != null && lastPointerY != null) {
-            var hit = document.elementFromPoint(lastPointerX, lastPointerY);
-            if (isInsideMenuSystem(hit)) return;
-        }
-        closeAllMenus();
+    function hideTopMenuPanel(item) {
+        var menu = item && item.querySelector(':scope > .sidenav-menu');
+        if (!menu) return;
+        menu.style.setProperty('display', 'none', 'important');
+        menu.style.setProperty('visibility', 'hidden', 'important');
+        menu.style.setProperty('opacity', '0', 'important');
+        menu.style.setProperty('pointer-events', 'none', 'important');
     }
 
-    function closeMenusOnPageScroll() {
-        closeAllMenus();
+    function showFlyoutPanel(item) {
+        var panel = item && item.querySelector(':scope > .sidenav-menu.sb-flyout-panel');
+        if (!panel) return;
+        panel.style.setProperty('display', 'flex', 'important');
+        panel.style.setProperty('visibility', 'visible', 'important');
+        panel.style.setProperty('opacity', '1', 'important');
+        panel.style.setProperty('pointer-events', 'auto', 'important');
     }
 
-    function bindPageScrollClose(el) {
-        if (!el || el._mahaScrollCloseBound) return;
-        el._mahaScrollCloseBound = true;
-        el.addEventListener('scroll', closeMenusOnPageScroll, { passive: true, capture: true });
+    function hideFlyoutPanel(item) {
+        var panel = item && item.querySelector(':scope > .sidenav-menu.sb-flyout-panel');
+        if (!panel) return;
+        panel.style.setProperty('display', 'none', 'important');
+        panel.style.setProperty('visibility', 'hidden', 'important');
+        panel.style.setProperty('opacity', '0', 'important');
+        panel.style.setProperty('pointer-events', 'none', 'important');
     }
 
-    function bindAllPageScrollClose() {
-        bindPageScrollClose(window);
-        bindPageScrollClose(document);
-        bindPageScrollClose(document.documentElement);
-        bindPageScrollClose(document.body);
-        document.querySelectorAll('.layout-content, .layout-wrapper, .layout-inner, .layout-container, main, .maha-dt-xscroll').forEach(bindPageScrollClose);
-    }
-
-    function handlePointerLeave(e) {
-        if (isInsideMenuSystem(e.relatedTarget)) return;
-        scheduleCloseHoverMenus();
-    }
-
-    function isPinned(item) {
-        return false;
-    }
-
-    function hasPinnedFlyout() {
-        return false;
-    }
-
-    function isFlyoutInteractionActive() {
-        return false;
-    }
-
-    function isPointerInsideMenuSystem() {
-        if (lastPointerX == null || lastPointerY == null) return false;
-        return isInsideMenuSystem(document.elementFromPoint(lastPointerX, lastPointerY));
-    }
-
-    function hasOpenMenus() {
-        return !!document.querySelector(
-            '.sidenav-inner > .sidenav-item.open, .sb-flyout-submenu.open'
-        );
-    }
-
-    function closeOpenHoverMenus(includePinned) {
-        closeAllMenus();
-    }
-
-    function closeAllExceptTopMenu(activeTopItem) {
-        closeOtherTopMenus(activeTopItem);
-    }
-
-    function pinTopMenuForItem(item) {
-        var topItem = item.closest('.sidenav-inner > .sidenav-item');
-        if (!topItem) return;
-        topItem.classList.add('sb-menu-pinned', 'open');
-        requestAnimationFrame(function () {
-            positionTopMenu(topItem);
-        });
-    }
-
-    function unpinTopMenuIfEmpty() {
-        sidenav.querySelectorAll('.sidenav-inner > .sidenav-item.sb-menu-pinned').forEach(function (topItem) {
-            if (!topItem.querySelector('.sb-flyout-submenu.sb-flyout-pinned')) {
-                topItem.classList.remove('sb-menu-pinned');
-            }
-        });
-    }
-
-    function pinFlyout(item) {
-        item.classList.add('sb-flyout-pinned');
-        pinTopMenuForItem(item);
-    }
-
-    function unpinFlyout(item) {
-        item.classList.remove('sb-flyout-pinned');
-        unpinTopMenuIfEmpty();
-    }
-
-    function closeFlyouts(root) {
-        if (root && root !== sidenav) {
-            root.querySelectorAll('.sb-flyout-submenu.open').forEach(function (el) {
-                el.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
-                resetFlyoutSide(el);
+    function closeOtherTopMenus(activeItem) {
+        sidenav.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (el) {
+            if (activeItem && el === activeItem) return;
+            el.classList.remove('open', 'show', 'active', 'sb-menu-align-right');
+            hideTopMenuPanel(el);
+            el.querySelectorAll('.sb-flyout-submenu').forEach(function (fly) {
+                closeFlyoutBranch(fly);
             });
-            return;
-        }
-        closeAllMenus();
+        });
+    }
+
+    function closeAllTopMenus() {
+        sidenav.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (el) {
+            el.classList.remove('open', 'show', 'active', 'sb-menu-align-right');
+            hideTopMenuPanel(el);
+            el.querySelectorAll('.sb-flyout-submenu').forEach(function (fly) {
+                closeFlyoutBranch(fly);
+            });
+        });
+    }
+
+    function closeAllMenus() {
+        closeAllTopMenus();
+        sidenav.querySelectorAll('.sb-flyout-submenu').forEach(function (fly) {
+            closeFlyoutBranch(fly);
+        });
+        document.querySelectorAll('body > .sb-flyout-portal').forEach(function (panel) {
+            panel.remove();
+        });
+    }
+
+    function closeTopMenu(item) {
+        if (!item) return;
+        item.classList.remove('open', 'show', 'active', 'sb-menu-align-right');
+        hideTopMenuPanel(item);
+        item.querySelectorAll('.sb-flyout-submenu').forEach(function (fly) {
+            closeFlyoutBranch(fly);
+        });
+    }
+
+    function maybeCloseMenusFromPointer() {
+        window.requestAnimationFrame(function () {
+            if (lastPointerX == null || lastPointerY == null) {
+                return;
+            }
+            if (isNavZone(document.elementFromPoint(lastPointerX, lastPointerY))) {
+                return;
+            }
+            closeAllMenus();
+        });
     }
 
     function positionTopMenu(item) {
         var menu = item.querySelector(':scope > .sidenav-menu');
         var toggle = item.querySelector(':scope > .sidenav-toggle');
-        if (!menu) return;
+        if (!menu || !item.classList.contains('open')) return;
 
-        menu.classList.add('sb-top-menu-fixed');
-        menu.style.setProperty('min-width', '240px', 'important');
-        menu.style.setProperty('max-height', Math.max(180, window.innerHeight - item.getBoundingClientRect().bottom - 8) + 'px', 'important');
-        menu.style.setProperty('overflow', 'visible', 'important');
+        showTopMenuPanel(item);
 
-        menu.style.setProperty('visibility', 'hidden', 'important');
-        menu.style.setProperty('display', 'flex', 'important');
+        var itemRect = item.getBoundingClientRect();
+        var maxH = Math.max(180, window.innerHeight - itemRect.bottom - 12);
+        menu.style.setProperty('max-height', maxH + 'px', 'important');
 
-        var toggleRect = toggle ? toggle.getBoundingClientRect() : item.getBoundingClientRect();
-        var menuWidth = menu.offsetWidth || 240;
+        var toggleRect = toggle ? toggle.getBoundingClientRect() : itemRect;
+        var menuWidth = Math.min(320, Math.max(240, menu.offsetWidth || 260));
         var viewportPad = 8;
-        var overflowRight = toggleRect.left + menuWidth > window.innerWidth - viewportPad;
-
-        menu.style.setProperty('top', toggleRect.bottom + 'px', 'important');
-
-        if (overflowRight) {
+        if (toggleRect.left + menuWidth > window.innerWidth - viewportPad) {
             item.classList.add('sb-menu-align-right');
-            menu.style.removeProperty('left');
-            menu.style.setProperty('right', (window.innerWidth - toggleRect.right) + 'px', 'important');
         } else {
             item.classList.remove('sb-menu-align-right');
-            menu.style.removeProperty('right');
-            menu.style.setProperty('left', toggleRect.left + 'px', 'important');
-        }
-
-        menu.style.removeProperty('visibility');
-
-        if (menu.scrollHeight > menu.clientHeight + 1) {
-            menu.classList.add('sb-dropdown-scrolling');
-        } else {
-            menu.classList.remove('sb-dropdown-scrolling');
         }
     }
 
-    function resetTopMenu(item) {
-        var menu = item.querySelector(':scope > .sidenav-menu');
-        if (!menu) return;
-        item.classList.remove('sb-menu-align-right');
-        menu.classList.remove('sb-top-menu-fixed', 'sb-dropdown-scrolling');
-        menu.style.removeProperty('top');
-        menu.style.removeProperty('left');
-        menu.style.removeProperty('right');
-        menu.style.removeProperty('min-width');
-        menu.style.removeProperty('max-height');
-        menu.style.removeProperty('overflow');
-        menu.style.removeProperty('visibility');
-        menu.style.removeProperty('display');
+    function needsPortalFlyout(item) {
+        return false;
     }
 
-    function needsFixedFlyout(item) {
-        var menu = item.parentElement;
-        if (!menu || !menu.classList.contains('sidenav-menu') || menu.classList.contains('sb-flyout-panel')) {
-            return false;
+    function measureFlyoutWidth(panel) {
+        if (!panel) return 260;
+        var hadOpen = panel.classList.contains('sb-flyout-open');
+        panel.style.setProperty('display', 'flex', 'important');
+        panel.style.setProperty('visibility', 'hidden', 'important');
+        panel.style.setProperty('position', 'absolute', 'important');
+        panel.style.setProperty('left', '-9999px', 'important');
+        var width = panel.scrollWidth || panel.offsetWidth || 260;
+        panel.style.removeProperty('visibility');
+        panel.style.removeProperty('position');
+        panel.style.removeProperty('left');
+        if (!hadOpen && !panel.classList.contains('sb-flyout-open')) {
+            panel.style.removeProperty('display');
         }
-        var topItem = menu.parentElement && menu.parentElement.closest('.sidenav-inner > .sidenav-item');
-        if (!topItem) return false;
-        var topMenu = topItem.querySelector(':scope > .sidenav-menu');
-        if (topMenu && topMenu.classList.contains('sb-top-menu-fixed')) {
-            return false;
-        }
-        return true;
+        return Math.min(320, Math.max(240, width));
     }
 
     function getFlyoutDepth(item) {
@@ -880,128 +1066,48 @@ include 'admin-sidebar-menu-organized.php';
     }
 
     function isNestedFlyout(item) {
-        var parentMenu = item && item.parentElement;
-        if (!parentMenu || !parentMenu.classList.contains('sidenav-menu')) {
-            return false;
-        }
-        if (parentMenu.classList.contains('sb-flyout-panel')) {
-            return true;
-        }
-        return parentMenu.classList.contains('sb-top-menu-fixed');
+        return needsPortalFlyout(item);
     }
 
-    function isMovingToFlyoutPanel(item, relatedTarget) {
-        if (!relatedTarget || !item) return false;
-        if (item.contains(relatedTarget)) return true;
-        var panel = getPanel(item);
-        return !!(panel && (panel === relatedTarget || panel.contains(relatedTarget)));
+    function ensureFlyoutAncestorsOpen(item) {
+        var topItem = getTopMenuItem(item);
+        if (topItem) {
+            topItem.classList.add('open');
+            showTopMenuPanel(topItem);
+            positionTopMenu(topItem);
+        }
+        getFlyoutAncestorChain(item).forEach(function (fly) {
+            fly.classList.add('open');
+            showFlyoutPanel(fly);
+            positionFlyoutPanel(fly);
+        });
     }
 
-    function keepFlyoutAncestorsOpen(item) {
-        var el = item;
-        while (el && el !== sidenav) {
-            if (el.classList && el.classList.contains('sb-flyout-submenu')) {
-                el.classList.add('open');
-            }
-            if (el.matches && el.matches('.sidenav-inner > .sidenav-item')) {
-                el.classList.add('open');
-                requestAnimationFrame(function () {
-                    positionTopMenu(el);
-                });
-                break;
-            }
-            el = el.parentElement;
-        }
-    }
+    function positionFlyoutPanel(item) {
+        if (!item || !item.classList.contains('open')) return;
 
-    function portalFlyout(item) {
-        if (!needsFixedFlyout(item)) {
-            restoreFlyoutPortal(item);
-            item._sbFlyoutPanel = item.querySelector(':scope > .sb-flyout-panel');
-            return;
-        }
+        restoreFlyoutPortal(item);
+        item._sbFlyoutPanel = item.querySelector(':scope > .sidenav-menu.sb-flyout-panel');
 
-        var panel = item.querySelector(':scope > .sb-flyout-panel');
-        if (!panel || panel.classList.contains('sb-flyout-portal')) {
-            item._sbFlyoutPanel = panel;
-            return;
-        }
-
-        if (!item._sbFlyoutAnchor) {
-            item._sbFlyoutAnchor = document.createComment('sb-flyout');
-            panel.parentNode.insertBefore(item._sbFlyoutAnchor, panel);
-        }
-
-        item._sbFlyoutPanel = panel;
-        panel._sbFlyoutOwner = item;
-        panel.classList.add('sb-flyout-portal');
-        document.body.appendChild(panel);
-
-        if (!panel._sbFlyoutBound) {
-            panel._sbFlyoutBound = true;
-            panel.addEventListener('mouseenter', function () {
-                item.classList.add('open');
-            });
-            panel.addEventListener('mouseleave', handlePointerLeave);
-        }
-    }
-
-    function restoreFlyoutPortal(item) {
-        var panel = item._sbFlyoutPanel || item.querySelector(':scope > .sb-flyout-panel');
-        if (!panel || !panel.classList.contains('sb-flyout-portal')) return;
-
-        panel.classList.remove('sb-flyout-portal', 'sb-flyout-open', 'sb-flyout-nested-fixed');
-        panel.style.top = '';
-        panel.style.left = '';
-        panel.style.right = '';
-        panel.style.maxHeight = '';
-        panel.style.display = '';
-        panel.style.position = '';
-
-        if (item._sbFlyoutAnchor && item._sbFlyoutAnchor.parentNode) {
-            item._sbFlyoutAnchor.parentNode.insertBefore(panel, item._sbFlyoutAnchor.nextSibling);
-        }
-
-        item._sbFlyoutPanel = null;
-        if (panel._sbFlyoutOwner === item) {
-            panel._sbFlyoutOwner = null;
-        }
-    }
-
-    function adjustFlyoutSide(item) {
-        portalFlyout(item);
-
-        var panel = getPanel(item);
+        var panel = item.querySelector(':scope > .sidenav-menu.sb-flyout-panel');
         var toggle = item.querySelector(':scope > .sb-submenu-toggle');
         if (!panel || !toggle) return;
+
+        showFlyoutPanel(item);
+
+        panel.classList.remove('sb-flyout-nested-fixed', 'sb-flyout-portal', 'sb-flyout-open');
+        panel.style.removeProperty('margin');
+        panel.style.removeProperty('width');
+        panel.style.removeProperty('max-height');
+        panel.style.removeProperty('overflow-y');
 
         var topItem = getTopMenuItem(item);
         var forceLeft = !!(topItem && topItem.classList.contains('sb-menu-align-right'));
 
         item.classList.remove('sb-flyout-left');
-        panel.classList.remove('sb-flyout-nested-fixed', 'sb-flyout-open');
-        panel.style.position = '';
-        panel.style.top = '';
-        panel.style.left = '';
-        panel.style.right = '';
-        panel.style.maxHeight = '';
-        panel.style.visibility = '';
-        panel.style.pointerEvents = '';
-        panel.style.display = '';
-
-        if (!item.classList.contains('open')) {
-            return;
-        }
-
-        if (panel.classList.contains('sb-flyout-portal')) {
-            panel.classList.add('sb-flyout-open');
-        }
-        panel.style.visibility = 'hidden';
-        panel.style.pointerEvents = 'none';
-
         var toggleRect = toggle.getBoundingClientRect();
-        var panelWidth = panel.offsetWidth || 280;
-        var gap = 4;
+        var panelWidth = Math.min(320, Math.max(240, panel.offsetWidth || panel.scrollWidth || 260));
+        var gap = 2;
         var viewportPad = 8;
         var overflowRight = toggleRect.right + gap + panelWidth > window.innerWidth - viewportPad;
         var overflowLeft = toggleRect.left - gap - panelWidth < viewportPad;
@@ -1010,69 +1116,149 @@ include 'admin-sidebar-menu-organized.php';
             item.classList.add('sb-flyout-left');
         }
 
-        var useFixed = (needsFixedFlyout(item) && panel.classList.contains('sb-flyout-portal')) || isNestedFlyout(item);
-        if (useFixed) {
-            var openLeft = item.classList.contains('sb-flyout-left');
-            var top = toggleRect.top;
-            var left = openLeft
-                ? toggleRect.left - gap - panelWidth
-                : toggleRect.right + gap;
-            left = Math.max(viewportPad, Math.min(left, window.innerWidth - panelWidth - viewportPad));
-            panel.classList.add('sb-flyout-nested-fixed');
-            panel.style.position = 'fixed';
-            panel.style.top = top + 'px';
-            panel.style.left = left + 'px';
-            panel.style.right = 'auto';
-            panel.style.maxHeight = Math.max(120, window.innerHeight - top - viewportPad) + 'px';
-            panel.style.zIndex = String(1060 + getFlyoutDepth(item) * 10);
+        panel.style.setProperty('position', 'absolute', 'important');
+        panel.style.setProperty('top', '0', 'important');
+        if (item.classList.contains('sb-flyout-left')) {
+            panel.style.setProperty('left', 'auto', 'important');
+            panel.style.setProperty('right', '100%', 'important');
         } else {
-            panel.classList.remove('sb-flyout-nested-fixed');
+            panel.style.setProperty('left', '100%', 'important');
+            panel.style.setProperty('right', 'auto', 'important');
         }
-
-        panel.style.visibility = 'visible';
-        panel.style.pointerEvents = '';
+        panel.style.setProperty('z-index', String(FLYOUT_Z_BASE + getFlyoutDepth(item) * 5), 'important');
     }
 
-    function resetFlyoutSide(item) {
-        item.classList.remove('sb-flyout-left');
-        var panel = getPanel(item);
-        if (panel) {
-            panel.classList.remove('sb-flyout-nested-fixed', 'sb-flyout-open');
-            panel.style.position = '';
-            panel.style.top = '';
-            panel.style.left = '';
-            panel.style.right = '';
-            panel.style.maxHeight = '';
-            panel.style.visibility = '';
-            panel.style.pointerEvents = '';
-            panel.style.display = '';
-            panel.style.zIndex = '';
-        }
-        restoreFlyoutPortal(item);
-    }
-
-    function openFlyout(item, shouldPin) {
-        var activeTop = getTopMenuItem(item);
-        closeOtherTopMenus(activeTop);
-        closeSiblingFlyouts(item);
-        item.classList.add('open');
-        requestAnimationFrame(function () {
-            adjustFlyoutSide(item);
+    function bindPortalPanelEvents(item, panel) {
+        if (panel._sbFlyoutBound) return;
+        panel._sbFlyoutBound = true;
+        panel.addEventListener('mouseenter', function () {
+            var topItem = getTopMenuItem(item);
+            closeOtherTopMenus(topItem);
+            if (topItem) {
+                topItem.classList.add('open');
+                showTopMenuPanel(topItem);
+                positionTopMenu(topItem);
+            }
+            getFlyoutAncestorChain(item).forEach(function (fly) {
+                fly.classList.add('open');
+                showFlyoutPanel(fly);
+                positionFlyoutPanel(fly);
+            });
         });
+        panel.addEventListener('mouseleave', function (e) {
+            if (isFlyoutRelated(item, e.relatedTarget)) return;
+            maybeCloseMenusFromPointer();
+        });
+    }
+
+    function portalFlyout(item) {
+        restoreFlyoutPortal(item);
+        item._sbFlyoutPanel = item.querySelector(':scope > .sb-flyout-panel');
+    }
+
+    function positionFlyoutPanelFixed(item, panel, toggle) {
+        positionFlyoutPanel(item);
+    }
+
+    function adjustFlyoutSide(item) {
+        positionFlyoutPanel(item);
+    }
+
+    function openTopMenu(item) {
+        if (!item) return;
+        closeOtherTopMenus(item);
+        item.classList.add('open');
+        showTopMenuPanel(item);
+        positionTopMenu(item);
+    }
+
+    function openFlyout(item) {
+        if (!item) return;
+        var topItem = getTopMenuItem(item);
+
+        closeOtherTopMenus(topItem);
+
+        if (topItem) {
+            topItem.classList.add('open');
+            showTopMenuPanel(topItem);
+            positionTopMenu(topItem);
+        }
+
+        getFlyoutAncestorChain(item).forEach(function (fly) {
+            if (fly === item) return;
+            fly.classList.add('open');
+            showFlyoutPanel(fly);
+            positionFlyoutPanel(fly);
+        });
+
+        item.classList.add('open');
+        showFlyoutPanel(item);
+        positionFlyoutPanel(item);
+
+        closeSiblingFlyouts(item);
     }
 
     function toggleFlyout(item) {
         var isOpen = item.classList.contains('open');
-        closeSiblingFlyouts(item);
         if (isOpen) {
-            item.classList.remove('open', 'sb-flyout-pinned', 'active', 'show');
-            resetFlyoutSide(item);
+            closeFlyoutBranch(item);
+            maybeCloseMenusFromPointer();
             return;
         }
-        openFlyout(item, false);
+        openFlyout(item);
     }
 
-    restoreAllPortaledFlyouts();
+    function onPageScrollClose(e) {
+        if (!sidenav.querySelector('.sidenav-inner > .sidenav-item.open')) {
+            return;
+        }
+        var target = e && e.target;
+        if (target && (target === sidenav || sidenav.contains(target))) {
+            return;
+        }
+        if (target && target.closest && target.closest('body > .sb-flyout-portal.sb-flyout-open')) {
+            return;
+        }
+        closeAllMenus();
+    }
+
+    function bindPageScrollClose(el) {
+        if (!el || el._mahaScrollCloseBound) return;
+        el._mahaScrollCloseBound = true;
+        el.addEventListener('scroll', onPageScrollClose, { passive: true });
+    }
+
+    function bindAllPageScrollClose() {
+        document.querySelectorAll('.layout-content, .layout-wrapper, .layout-inner, .layout-container, main, .maha-dt-xscroll').forEach(bindPageScrollClose);
+    }
+
+    function fixHorizontalMenuOverflow() {
+        sidenav.querySelectorAll('.sidenav-horizontal-wrapper, .sidenav-inner').forEach(function (el) {
+            el.style.setProperty('overflow', 'visible', 'important');
+        });
+        var outerSidenav = sidenav.closest('.sidenav');
+        if (outerSidenav) {
+            outerSidenav.style.setProperty('overflow', 'visible', 'important');
+        }
+    }
+
+    function patchThemeSidenavInstance() {
+        fixHorizontalMenuOverflow();
+        var inst = sidenav.sidenavInstance;
+        if (!inst || inst._mahaTopMenuPatched) {
+            return;
+        }
+        inst._mahaTopMenuPatched = true;
+        if (typeof inst.closeAll === 'function') {
+            inst.closeAll = closeAllMenus;
+        }
+        if (inst._wrapper) {
+            inst._wrapper.style.setProperty('overflow', 'visible', 'important');
+        }
+    }
+
+    closeAllTopMenus();
+    fixHorizontalMenuOverflow();
 
     document.addEventListener('mousemove', function (e) {
         lastPointerX = e.clientX;
@@ -1080,13 +1266,18 @@ include 'admin-sidebar-menu-organized.php';
     }, { passive: true });
 
     sidenav.querySelectorAll('.sb-flyout-submenu').forEach(function (item) {
+        var toggle = item.querySelector(':scope > .sb-submenu-toggle');
+        if (toggle) {
+            toggle.addEventListener('mouseenter', function () {
+                openFlyout(item);
+            });
+        }
         item.addEventListener('mouseenter', function () {
-            openFlyout(item, false);
+            openFlyout(item);
         });
         item.addEventListener('mouseleave', function (e) {
-            if (isMovingToFlyoutPanel(item, e.relatedTarget)) return;
-            closeFlyoutDescendants(item);
-            handlePointerLeave(e);
+            if (isFlyoutRelated(item, e.relatedTarget)) return;
+            maybeCloseMenusFromPointer();
         });
     });
 
@@ -1094,102 +1285,60 @@ include 'admin-sidebar-menu-organized.php';
         if (panel._sbPanelHoverBound) return;
         panel._sbPanelHoverBound = true;
         panel.addEventListener('mouseenter', function () {
-            if (hoverCloseTimer) {
-                window.clearTimeout(hoverCloseTimer);
-                hoverCloseTimer = null;
-            }
-            var owner = panel.parentElement;
-            if (owner && owner.classList.contains('sb-flyout-submenu')) {
-                keepFlyoutAncestorsOpen(owner);
-            }
+            var owner = getFlyoutOwner(panel);
+            if (!owner) return;
+            openFlyout(owner);
         });
         panel.addEventListener('mouseleave', function (e) {
-            var owner = panel.parentElement;
-            if (!owner || !owner.classList.contains('sb-flyout-submenu')) return;
-            if (isMovingToFlyoutPanel(owner, e.relatedTarget)) return;
-            closeFlyoutDescendants(owner);
-            handlePointerLeave(e);
+            var owner = getFlyoutOwner(panel);
+            if (!owner) return;
+            if (isFlyoutRelated(owner, e.relatedTarget)) return;
+            maybeCloseMenusFromPointer();
         });
+    });
+
+    sidenav.querySelectorAll('.sidenav-inner > .sidenav-item > .sidenav-toggle').forEach(function (toggle) {
+        var item = toggle.closest('.sidenav-inner > .sidenav-item');
+        if (!item) return;
+
+        toggle.addEventListener('mouseenter', function () {
+            openTopMenu(item);
+        });
+
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (item.classList.contains('open')) {
+                closeTopMenu(item);
+            } else {
+                openTopMenu(item);
+            }
+        }, true);
     });
 
     sidenav.querySelectorAll('.sidenav-inner > .sidenav-item > .sidenav-menu').forEach(function (menu) {
         menu.addEventListener('mouseenter', function () {
             var item = menu.closest('.sidenav-inner > .sidenav-item');
-            if (!item) return;
-            if (hoverCloseTimer) {
-                window.clearTimeout(hoverCloseTimer);
-                hoverCloseTimer = null;
-            }
-            item.classList.add('open');
-            requestAnimationFrame(function () {
-                positionTopMenu(item);
-            });
+            if (item) openTopMenu(item);
         });
-        menu.addEventListener('mouseleave', handlePointerLeave);
+        menu.addEventListener('mouseleave', function (e) {
+            if (e.relatedTarget && menu.contains(e.relatedTarget)) return;
+            maybeCloseMenusFromPointer();
+        });
     });
 
     sidenav.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (item) {
         if (!item.querySelector(':scope > .sidenav-toggle')) return;
 
-        item.addEventListener('mouseenter', function () {
-            closeOtherTopMenus(item);
-            item.classList.add('open');
-            requestAnimationFrame(function () {
-                positionTopMenu(item);
-            });
+        item.addEventListener('mouseleave', function (e) {
+            var menu = item.querySelector(':scope > .sidenav-menu');
+            if (menu && e.relatedTarget && menu.contains(e.relatedTarget)) return;
+            if (e.relatedTarget && item.contains(e.relatedTarget)) return;
+            maybeCloseMenusFromPointer();
         });
-
-        item.addEventListener('mouseleave', handlePointerLeave);
-
-        var topToggle = item.querySelector(':scope > .sidenav-toggle');
-        if (topToggle) {
-            topToggle.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var isOpen = item.classList.contains('open');
-                closeOtherTopMenus(item);
-                if (isOpen) {
-                    item.classList.remove('open', 'active', 'show');
-                    resetTopMenu(item);
-                } else {
-                    item.classList.add('open');
-                    positionTopMenu(item);
-                }
-            }, true);
-        }
     });
 
-    sidenav.addEventListener('mouseleave', handlePointerLeave);
-
-    document.addEventListener('scroll', closeMenusOnPageScroll, { passive: true, capture: true });
-    bindAllPageScrollClose();
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bindAllPageScrollClose);
-    }
-    window.addEventListener('load', bindAllPageScrollClose);
-
-    document.addEventListener('wheel', function (e) {
-        if (!hasOpenMenus()) return;
-        var menuScroller = e.target.closest('.sidenav-menu, .sb-flyout-panel');
-        if (menuScroller) {
-            var delta = e.deltaY || 0;
-            var atTop = menuScroller.scrollTop <= 0;
-            var atBottom = menuScroller.scrollTop + menuScroller.clientHeight >= menuScroller.scrollHeight - 1;
-            if ((delta < 0 && !atTop) || (delta > 0 && !atBottom)) {
-                return;
-            }
-        }
-        closeMenusOnPageScroll();
-    }, { passive: true });
-
-    window.addEventListener('resize', function () {
-        closeAllMenus();
-    });
-
-    document.addEventListener('click', function (e) {
-        if (isInsideMenuSystem(e.target)) return;
-        closeAllMenus();
-    });
+    sidenav.addEventListener('mouseleave', maybeCloseMenusFromPointer);
 
     sidenav.addEventListener('click', function (e) {
         if (e.target.closest('.sidenav-horizontal-prev, .sidenav-horizontal-next')) {
@@ -1200,25 +1349,63 @@ include 'admin-sidebar-menu-organized.php';
     sidenav.addEventListener('click', function (e) {
         var toggle = e.target.closest('.sb-submenu-toggle');
         if (!toggle) return;
-
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-
-        var item = toggle.closest('.sb-flyout-submenu');
-        if (!item) return;
-
-        toggleFlyout(item);
+        var flyoutItem = toggle.closest('.sb-flyout-submenu');
+        if (flyoutItem) toggleFlyout(flyoutItem);
     }, true);
 
-    window.addEventListener('load', function () {
-        restoreAllPortaledFlyouts();
-        if (window.layoutSidenav && typeof window.layoutSidenav.closeAll === 'function') {
-            window.layoutSidenav.closeAll = function () {
-                closeAllMenus();
-            };
+    sidenav.addEventListener('click', function (e) {
+        var link = e.target.closest('a.sidenav-link');
+        if (isNavigableLink(link)) closeAllMenus();
+    }, true);
+
+    document.addEventListener('click', function (e) {
+        var link = e.target.closest('.sb-flyout-portal a.sidenav-link, a.sidenav-link');
+        if (isNavigableLink(link)) {
+            closeAllMenus();
+            return;
         }
-    });
+        if (!isNavZone(e.target)) {
+            closeAllMenus();
+        }
+    }, true);
+
+    bindAllPageScrollClose();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindAllPageScrollClose);
+    }
+    window.addEventListener('load', bindAllPageScrollClose);
+
+    document.addEventListener('wheel', function (e) {
+        if (!sidenav.querySelector('.sidenav-inner > .sidenav-item.open')) {
+            return;
+        }
+        if (e.target.closest('#layout-sidenav, body > .sb-flyout-portal.sb-flyout-open')) {
+            var scroller = e.target.closest('.sidenav-menu.sb-dropdown-scrolling, .sb-flyout-panel, .sb-flyout-portal.sb-flyout-panel');
+            if (scroller && scroller.scrollHeight > scroller.clientHeight + 1) {
+                var delta = e.deltaY || 0;
+                var atTop = scroller.scrollTop <= 0;
+                var atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+                if ((delta < 0 && !atTop) || (delta > 0 && !atBottom)) {
+                    return;
+                }
+            }
+            return;
+        }
+        closeAllMenus();
+    }, { passive: true });
+
+    window.addEventListener('resize', closeAllMenus);
+
+    window.layoutSidenav = window.layoutSidenav || {};
+    window.layoutSidenav.closeAll = closeAllMenus;
+
+    window.addEventListener('load', patchThemeSidenavInstance);
+    if (document.readyState === 'complete') {
+        patchThemeSidenavInstance();
+    }
 })();
 </script>
 <?php if ($mahaMenuVertical) { ?>
@@ -1227,14 +1414,121 @@ include 'admin-sidebar-menu-organized.php';
     var root = document.getElementById('layout-sidenav');
     if (!root || !root.classList.contains('maha-vertical-sidenav')) return;
 
-    function closeVerticalSubmenus(exceptItem) {
-        root.querySelectorAll('.sb-flyout-submenu.open').forEach(function (el) {
-            if (exceptItem && el === exceptItem) return;
-            el.classList.remove('open', 'active', 'show');
+    var STATE_CLASSES = ['open', 'show', 'active', 'sb-menu-pinned', 'sb-flyout-pinned'];
+    var lastPointerX = null;
+    var lastPointerY = null;
+
+    function stripState(el) {
+        if (!el || !el.classList) return;
+        STATE_CLASSES.forEach(function (cls) {
+            el.classList.remove(cls);
         });
     }
 
+    function isNavigableLink(link) {
+        if (!link || !link.classList) return false;
+        if (link.classList.contains('sb-submenu-toggle') || link.classList.contains('sidenav-toggle')) {
+            return false;
+        }
+        var href = (link.getAttribute('href') || '').trim();
+        return href && href !== '#' && href.indexOf('javascript:') !== 0;
+    }
+
+    function closeFlyoutBranch(item) {
+        if (!item) return;
+        item.querySelectorAll('.sb-flyout-submenu').forEach(function (nested) {
+            stripState(nested);
+        });
+        stripState(item);
+    }
+
+    function closeSiblingFlyouts(item) {
+        var parent = item && item.parentElement;
+        if (!parent) return;
+        parent.querySelectorAll(':scope > .sb-flyout-submenu').forEach(function (sibling) {
+            if (sibling === item) return;
+            closeFlyoutBranch(sibling);
+        });
+    }
+
+    function closeOtherTopMenus(activeItem) {
+        root.querySelectorAll('.sidenav-inner > .sidenav-item').forEach(function (item) {
+            if (activeItem && item === activeItem) return;
+            stripState(item);
+            item.querySelectorAll('.sb-flyout-submenu').forEach(closeFlyoutBranch);
+        });
+    }
+
+    function cleanupStaleState() {
+        root.querySelectorAll('.sidenav-item, .sb-flyout-submenu').forEach(function (el) {
+            el.classList.remove('sb-menu-pinned', 'sb-flyout-pinned', 'show');
+        });
+        document.querySelectorAll('body > .sb-flyout-portal').forEach(function (panel) {
+            panel.remove();
+        });
+    }
+
+    function closeAllMenus() {
+        root.querySelectorAll('.sidenav-item, .sb-flyout-submenu').forEach(stripState);
+        document.querySelectorAll('body > .sb-flyout-portal').forEach(function (panel) {
+            panel.remove();
+        });
+    }
+
+    function ensureAncestorMenusOpen(item) {
+        var el = item ? item.parentElement : null;
+        while (el && el !== root) {
+            if (el.classList.contains('sidenav-item')) {
+                el.classList.add('open');
+            }
+            el = el.parentElement;
+        }
+    }
+
+    function maybeCloseMenusFromPointer() {
+        window.requestAnimationFrame(function () {
+            if (lastPointerX == null || lastPointerY == null) {
+                closeAllMenus();
+                return;
+            }
+            var hit = document.elementFromPoint(lastPointerX, lastPointerY);
+            if (!hit || !root.contains(hit)) {
+                closeAllMenus();
+            }
+        });
+    }
+
+    function isScrollInsideSidebar(target) {
+        return target === root || !!(target && root.contains(target));
+    }
+
+    cleanupStaleState();
+
+    document.addEventListener('mousemove', function (e) {
+        lastPointerX = e.clientX;
+        lastPointerY = e.clientY;
+    }, { passive: true });
+
+    root.addEventListener('mouseleave', maybeCloseMenusFromPointer);
+
     root.addEventListener('click', function (e) {
+        var topToggle = e.target.closest('.sidenav-inner > .sidenav-item > .sidenav-toggle');
+        if (topToggle && root.contains(topToggle)) {
+            var topItem = topToggle.closest('.sidenav-inner > .sidenav-item');
+            if (!topItem) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var isOpen = topItem.classList.contains('open');
+            closeOtherTopMenus(topItem);
+            if (isOpen) {
+                stripState(topItem);
+                topItem.querySelectorAll('.sb-flyout-submenu').forEach(closeFlyoutBranch);
+            } else {
+                topItem.classList.add('open');
+            }
+            return;
+        }
+
         var toggle = e.target.closest('.sb-submenu-toggle');
         if (!toggle || !root.contains(toggle)) return;
         if (toggle.classList.contains('sidenav-toggle')) return;
@@ -1246,27 +1540,38 @@ include 'admin-sidebar-menu-organized.php';
         if (!item) return;
 
         var isOpen = item.classList.contains('open');
-        closeVerticalSubmenus(item);
+        closeSiblingFlyouts(item);
         if (isOpen) {
-            item.classList.remove('open', 'active', 'show');
+            closeFlyoutBranch(item);
         } else {
+            ensureAncestorMenusOpen(item);
             item.classList.add('open');
         }
-    });
+    }, true);
 
-    root.addEventListener('mouseleave', function (e) {
-        if (e.relatedTarget && root.contains(e.relatedTarget)) return;
-        closeVerticalSubmenus(null);
-    });
+    root.addEventListener('click', function (e) {
+        var link = e.target.closest('a.sidenav-link');
+        if (isNavigableLink(link)) closeAllMenus();
+    }, true);
 
     document.addEventListener('click', function (e) {
         if (root.contains(e.target)) return;
-        closeVerticalSubmenus(null);
+        closeAllMenus();
+    }, true);
+
+    document.addEventListener('scroll', function (e) {
+        if (isScrollInsideSidebar(e.target)) return;
+        closeAllMenus();
+    }, true);
+
+    document.querySelectorAll('.layout-content, .layout-wrapper, .layout-inner, .layout-container, main, .maha-dt-xscroll').forEach(function (el) {
+        el.addEventListener('scroll', closeAllMenus, { passive: true, capture: true });
     });
 
-    document.addEventListener('scroll', function () {
-        closeVerticalSubmenus(null);
-    }, true);
+    window.addEventListener('resize', closeAllMenus);
+
+    window.layoutSidenav = window.layoutSidenav || {};
+    window.layoutSidenav.closeAll = closeAllMenus;
 })();
 </script>
 <?php } ?>
