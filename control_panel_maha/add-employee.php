@@ -380,7 +380,28 @@ if ($id) {
 if (!is_array($row7)) {
     $row7 = array();
 }
-$row7['Options'] = explode(',', isset($row7['Options2']) ? (string) $row7['Options2'] : '');
+$empOptionsRaw = '';
+if (isset($row7['Options2']) && trim((string) $row7['Options2']) !== '' && trim((string) $row7['Options2']) !== '0') {
+    $empOptionsRaw = trim((string) $row7['Options2']);
+} elseif (isset($row7['Options']) && trim((string) $row7['Options']) !== '' && trim((string) $row7['Options']) !== '0') {
+    $empOptionsRaw = trim((string) $row7['Options']);
+}
+$row7['Options'] = ($empOptionsRaw !== '')
+    ? array_values(array_filter(array_map('trim', explode(',', $empOptionsRaw))))
+    : array();
+$empCanEditMenuAccess = ($user_id == 22170 || $user_id == 2651 || $user_id == 2650);
+$empMenuOptionsCsv = '';
+if ($empCanEditMenuAccess) {
+    $csvIds = array();
+    foreach ($row7['Options'] as $optVal) {
+        $oid = (int) $optVal;
+        if ($oid > 0) {
+            $csvIds[$oid] = $oid;
+        }
+    }
+    ksort($csvIds, SORT_NUMERIC);
+    $empMenuOptionsCsv = implode(',', $csvIds);
+}
 $row7['ExpCatId'] = explode(',', isset($row7['ExpCatId']) ? (string) $row7['ExpCatId'] : '');
 $row7['CocoFranchiseAccess'] = explode(',', isset($row7['CocoFranchiseAccess']) ? (string) $row7['CocoFranchiseAccess'] : '');
 $row7['AssignFranchiseAttendance'] = explode(',', isset($row7['AssignFranchiseAttendance']) ? (string) $row7['AssignFranchiseAttendance'] : '');
@@ -452,6 +473,10 @@ function emp_form_section_end() {
                                 <form id="validation-form" class="employee-form-sections emp-wizard-mode" method="post" autocomplete="off" action="ajax_files/ajax_employee.php" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" id="userid">
                                     <input type="hidden" name="action" value="Save" id="action">
+                                    <?php if ($empCanEditMenuAccess) { ?>
+                                    <input type="hidden" name="cp_menu_access_present" value="1">
+                                    <input type="hidden" name="Options2_csv" id="cp_options2_csv" value="<?php echo htmlspecialchars($empMenuOptionsCsv, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php } ?>
                                     <div class="emp-wizard-shell">
                                         <div class="emp-wizard-nav-wrap">
                                             <ul class="emp-wizard-nav" id="emp-wizard-nav" role="tablist" aria-label="Employee form steps"></ul>
@@ -836,7 +861,7 @@ function emp_form_section_end() {
                                         </div>-->
 
                                         
-                                         <?php if($user_id == 2650 || $user_id == 22170 || $user_id == 2799){?>
+                                         <?php if($user_id == 2650 || $user_id == 22170 || $user_id == 2799 || $user_id == 2651 || $user_id == 19957){?>
                                          <div class="form-group col-md-2">
                                             <label class="form-label">Salary Type <span class="text-danger">*</span></label>
                                             <select class="form-control" id="SalaryType" name="SalaryType" required="" onchange="getMonthSal(this.value,document.getElementById('PerDaySalary').value)">
@@ -1279,16 +1304,16 @@ foreach ($rowPartialReporting as $result) {
 
  <?php if($user_id == 2651 || $user_id == 2650 || $user_id == 22170 || $user_id == 2799){?>
 <div class="form-group col-md-3">
-<label class="form-label"> Under By Franchise</label>
- <select class="select2-demo form-control" name="UnderFrId" id="UnderFrId">
-<option selected="" value="0">Select Franchise</option>
+<label class="form-label"> Under By Franchise <span class="text-danger">*</span></label>
+ <select class="select2-demo form-control" name="UnderFrId" id="UnderFrId" required>
+<option value="" disabled<?php if (empty($row7['UnderFrId']) || (int) $row7['UnderFrId'] === 0) { ?> selected<?php } ?>>Select Franchise</option>
 
  <?php 
   $sql12 = "SELECT * FROM tbl_users WHERE Status='1' AND Roll=5";
   $row12 = getList($sql12);
   foreach($row12 as $result){
      ?>
-  <option <?php if($row7["UnderFrId"] == $result['id']) {?> selected <?php } ?> value="<?php echo $result['id'];?>">
+  <option <?php if((int) $row7["UnderFrId"] === (int) $result['id']) {?> selected <?php } ?> value="<?php echo $result['id'];?>">
     <?php echo $result['ShopName']." (".$result['Phone'].")"; ?></option>
 <?php } ?>
 
@@ -2504,53 +2529,109 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             if (isValid) {
+                if (typeof window.empCpMenuAccessCollect === 'function') {
+                    window.empCpMenuAccessCollect();
+                }
 
-                $.ajax({
-                    url: "ajax_files/ajax_employee.php",
-                    method: "POST",
-                    data: new FormData(this),
-                    contentType: false,
-                    processData: false,
-                    beforeSend: function() {
-                        $('#submit').attr('disabled', 'disabled');
-                        $('#submit').text('Please Wait...');
-                    },
-                    complete: function() {
-                        $('#submit').attr('disabled', false);
-                        $('#submit').text('Save');
-                    },
-                    success: function(data) {
+                var formEl = this;
+                var csvEl = document.getElementById('cp_options2_csv');
+                var empId = ($('#userid').val() || '').toString().trim();
+                var menuCsv = csvEl ? (csvEl.value || '') : '';
 
-                        if (data == 0) {
-                            error_toast();
+                var fd = new FormData(formEl);
+                while (fd.has('Options[]')) {
+                    fd.delete('Options[]');
+                }
+                if (csvEl) {
+                    fd.set('Options2_csv', menuCsv);
+                    fd.set('cp_menu_access_present', '1');
+                }
 
-                        } else {
-                            success_toast();
-                            setTimeout(function() {
-                                window.location.href = 'view-employee.php';
-                            }, 2000);
+                $('#submit').attr('disabled', 'disabled').text('Please Wait...');
+
+                function submitEmployeeForm() {
+                    $.ajax({
+                        url: "ajax_files/ajax_employee.php",
+                        method: "POST",
+                        data: fd,
+                        contentType: false,
+                        processData: false,
+                        complete: function() {
+                            $('#submit').attr('disabled', false).text('Save');
+                        },
+                        success: function(data) {
+                            if (data == 0) {
+                                error_toast();
+                            } else {
+                                success_toast();
+                                setTimeout(function() {
+                                    if (empId) {
+                                        window.location.href = 'add-employee.php?id=' + encodeURIComponent(empId);
+                                    } else {
+                                        window.location.href = 'view-employee.php';
+                                    }
+                                }, 1500);
+                            }
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                var msg = 'Please enter a proper password: at least 8 characters including letters, numbers, and symbols.';
+                                try {
+                                    var j = (typeof xhr.responseJSON !== 'undefined' && xhr.responseJSON) ? xhr.responseJSON : JSON.parse(xhr.responseText || '{}');
+                                    if (j && j.code === 'PASSWORD_POLICY_ERROR' && j.message) {
+                                        msg = j.message;
+                                    }
+                                } catch (ex) {
+                                    /* keep default msg */
+                                }
+                                var isRtl = $('body').attr('dir') === 'rtl' || $('html').attr('dir') === 'rtl';
+                                $.growl.error({
+                                    title: 'Password not accepted',
+                                    message: msg,
+                                    location: isRtl ? 'tl' : 'tr'
+                                });
+                            }
                         }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var msg = 'Please enter a proper password: at least 8 characters including letters, numbers, and symbols.';
+                    });
+                }
+
+                if (csvEl && empId) {
+                    $.ajax({
+                        url: "ajax_files/ajax_employee.php",
+                        method: "POST",
+                        dataType: "json",
+                        data: {
+                            action: "SaveMenuAccess",
+                            id: empId,
+                            Options2_csv: menuCsv,
+                            cp_menu_access_present: "1"
+                        },
+                        success: function(res) {
+                            if (res && res.ok) {
+                                fd.set('menu_access_saved', '1');
+                                submitEmployeeForm();
+                            } else {
+                                $('#submit').attr('disabled', false).text('Save');
+                                alert('Menu access could not be saved: ' + ((res && res.error) ? res.error : 'Unknown error'));
+                            }
+                        },
+                        error: function(xhr) {
+                            $('#submit').attr('disabled', false).text('Save');
+                            var msg = 'Menu access could not be saved.';
                             try {
-                                var j = (typeof xhr.responseJSON !== 'undefined' && xhr.responseJSON) ? xhr.responseJSON : JSON.parse(xhr.responseText || '{}');
-                                if (j && j.code === 'PASSWORD_POLICY_ERROR' && j.message) {
-                                    msg = j.message;
+                                var j = JSON.parse(xhr.responseText || '{}');
+                                if (j && j.error) {
+                                    msg = j.error;
                                 }
                             } catch (ex) {
                                 /* keep default msg */
                             }
-                            var isRtl = $('body').attr('dir') === 'rtl' || $('html').attr('dir') === 'rtl';
-                            $.growl.error({
-                                title: 'Password not accepted',
-                                message: msg,
-                                location: isRtl ? 'tl' : 'tr'
-                            });
+                            alert(msg);
                         }
-                    }
-                })
+                    });
+                } else {
+                    submitEmployeeForm();
+                }
 
 
 
@@ -2567,6 +2648,16 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!uid) return true;
             var cur = $('#Password').val() || '';
             return cur !== (window.__mahaEmployeePasswordInitial || '');
+        }
+
+        if ($('#UnderFrId').length) {
+            if (!$.validator.methods.required_franchise_select) {
+                $.validator.addMethod('required_franchise_select', function(value) {
+                    return value !== '' && value !== '0' && parseInt(value, 10) > 0;
+                }, 'Please select Under By Franchise.');
+            }
+            $('#UnderFrId').rules('add', { required_franchise_select: true });
+            $('#UnderFrId').on('change', function() { $(this).valid(); });
         }
 
         if ($('#Password').length) {

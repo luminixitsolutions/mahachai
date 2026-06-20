@@ -219,18 +219,22 @@ include 'admin-sidebar-menu-organized.php';
 .sidenav.bg-white {
     overflow: visible !important;
 }
-/* Menu scroll zone — allow dropdown below navbar (beats theme .sidenav-horizontal-wrapper { overflow:hidden }) */
+/* Horizontal scroll track — must clip horizontally so prev/next arrows work */
 .sidenav-horizontal .sidenav-horizontal-wrapper,
-.sidenav-horizontal .sidenav-inner,
-#layout-sidenav .sidenav-horizontal-wrapper,
-#layout-sidenav .sidenav-inner {
-    overflow: visible !important;
-}
-.sidenav-horizontal .sidenav-horizontal-wrapper {
+#layout-sidenav .sidenav-horizontal-wrapper {
     flex: 1 1 0 !important;
-    width: auto !important;
+    width: 0 !important;
     min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
     position: relative;
+}
+.sidenav-horizontal .sidenav-horizontal-wrapper > .sidenav-inner,
+#layout-sidenav .sidenav-horizontal-wrapper > .sidenav-inner {
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    transition: margin 0.2s ease;
 }
 .layout-navbar .navbar-collapse,
 .layout-navbar,
@@ -239,7 +243,7 @@ include 'admin-sidebar-menu-organized.php';
 }
 .layout-navbar {
     position: relative;
-    z-index: 1090;
+    z-index: 1100;
 }
 #layout-sidenav.sidenav-horizontal {
     position: relative;
@@ -253,7 +257,7 @@ include 'admin-sidebar-menu-organized.php';
     min-width: 36px !important;
     max-width: 36px !important;
     position: relative;
-    z-index: 40;
+    z-index: 60;
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -292,7 +296,7 @@ include 'admin-sidebar-menu-organized.php';
     max-width: 320px;
     width: max-content;
     max-height: 75vh;
-    overflow-x: visible !important;
+    overflow-x: hidden !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
     background: #0F5A4A !important;
@@ -316,7 +320,7 @@ include 'admin-sidebar-menu-organized.php';
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling {
     overflow-y: auto !important;
-    overflow-x: visible !important;
+    overflow-x: hidden !important;
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu > .sidenav-item,
 .sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu > .sb-flyout-submenu {
@@ -327,14 +331,38 @@ include 'admin-sidebar-menu-organized.php';
     max-width: 320px;
     box-sizing: border-box;
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar {
-    width: 6px;
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling,
+.sidenav-horizontal .sidenav-menu.sb-flyout-panel,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed,
+.sb-flyout-portal.sb-flyout-panel {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.35) rgba(0, 0, 0, 0.15);
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar-thumb {
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling::-webkit-scrollbar,
+.sidenav-horizontal .sidenav-menu.sb-flyout-panel::-webkit-scrollbar,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::-webkit-scrollbar,
+.sb-flyout-portal.sb-flyout-panel::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu.sb-dropdown-scrolling::-webkit-scrollbar:horizontal,
+.sidenav-horizontal .sidenav-menu.sb-flyout-panel::-webkit-scrollbar:horizontal,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::-webkit-scrollbar:horizontal,
+.sb-flyout-portal.sb-flyout-panel::-webkit-scrollbar:horizontal {
+    display: none;
+    height: 0;
+}
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar-thumb,
+.sidenav-horizontal .sidenav-menu.sb-flyout-panel::-webkit-scrollbar-thumb,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::-webkit-scrollbar-thumb,
+.sb-flyout-portal.sb-flyout-panel::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.35);
     border-radius: 3px;
 }
-.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar-track {
+.sidenav-horizontal .sidenav-inner > .sidenav-item > .sidenav-menu::-webkit-scrollbar-track,
+.sidenav-horizontal .sidenav-menu.sb-flyout-panel::-webkit-scrollbar-track,
+.sidenav-horizontal .sb-flyout-submenu > .sidenav-menu.sb-flyout-panel.sb-flyout-nested-fixed::-webkit-scrollbar-track,
+.sb-flyout-portal.sb-flyout-panel::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.15);
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item.open > .sidenav-menu {
@@ -342,7 +370,8 @@ include 'admin-sidebar-menu-organized.php';
     visibility: visible !important;
     opacity: 1 !important;
     pointer-events: auto !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
 }
 .sidenav-horizontal .sidenav-inner > .sidenav-item:not(.open) > .sidenav-menu {
     display: none !important;
@@ -423,7 +452,7 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     min-width: 240px !important;
     max-width: 320px !important;
     max-height: 75vh;
-    overflow-x: visible !important;
+    overflow-x: hidden !important;
     overflow-y: auto !important;
     margin: 0 0 0 2px !important;
     padding: 0.35rem 0 !important;
@@ -457,6 +486,8 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     min-width: 240px !important;
     max-width: 320px !important;
     width: max-content !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22) !important;
     border-radius: 4px;
     z-index: 1100 !important;
@@ -500,7 +531,7 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     width: max-content !important;
     max-height: 75vh;
     overflow-y: auto;
-    overflow-x: visible;
+    overflow-x: hidden;
     margin: 0 !important;
     padding: 0.35rem 0 !important;
     background: #0F5A4A !important;
@@ -870,6 +901,7 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
         if (panel) {
             stripUiClasses(panel);
             clearMenuInlineStyles(panel);
+            panel.classList.remove('sb-flyout-nested-fixed');
         }
         restoreFlyoutPortal(item);
         item._sbFlyoutPanel = null;
@@ -935,6 +967,10 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     function hideTopMenuPanel(item) {
         var menu = item && item.querySelector(':scope > .sidenav-menu');
         if (!menu) return;
+        menu.classList.remove('sb-top-menu-fixed');
+        MENU_STYLE_PROPS.forEach(function (prop) {
+            menu.style.removeProperty(prop);
+        });
         menu.style.setProperty('display', 'none', 'important');
         menu.style.setProperty('visibility', 'hidden', 'important');
         menu.style.setProperty('opacity', '0', 'important');
@@ -1017,22 +1053,54 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
         if (!menu || !item.classList.contains('open')) return;
 
         showTopMenuPanel(item);
+        menu.classList.add('sb-top-menu-fixed');
 
-        var itemRect = item.getBoundingClientRect();
-        var maxH = Math.max(180, window.innerHeight - itemRect.bottom - 12);
-        menu.style.setProperty('max-height', maxH + 'px', 'important');
-
-        var toggleRect = toggle ? toggle.getBoundingClientRect() : itemRect;
+        var anchorRect = toggle ? toggle.getBoundingClientRect() : item.getBoundingClientRect();
+        var maxH = Math.max(180, window.innerHeight - anchorRect.bottom - 12);
         var menuWidth = Math.min(320, Math.max(240, menu.offsetWidth || 260));
         var viewportPad = 8;
-        if (toggleRect.left + menuWidth > window.innerWidth - viewportPad) {
+        var left = anchorRect.left;
+
+        if (left + menuWidth > window.innerWidth - viewportPad) {
+            left = Math.max(viewportPad, anchorRect.right - menuWidth);
             item.classList.add('sb-menu-align-right');
         } else {
             item.classList.remove('sb-menu-align-right');
         }
+
+        menu.style.setProperty('position', 'fixed', 'important');
+        menu.style.setProperty('top', Math.round(anchorRect.bottom) + 'px', 'important');
+        menu.style.setProperty('left', Math.round(left) + 'px', 'important');
+        menu.style.setProperty('right', 'auto', 'important');
+        menu.style.setProperty('max-height', maxH + 'px', 'important');
+        menu.style.setProperty('overflow-x', 'hidden', 'important');
+        menu.style.setProperty('overflow-y', 'auto', 'important');
+        menu.style.setProperty('z-index', String(MENU_Z_BASE), 'important');
     }
 
     function needsPortalFlyout(item) {
+        return usesFixedFlyoutPosition(item);
+    }
+
+    function usesFixedFlyoutPosition(item) {
+        if (!item) return false;
+        var topItem = getTopMenuItem(item);
+        if (topItem) {
+            var topMenu = topItem.querySelector(':scope > .sidenav-menu');
+            if (topMenu && topMenu.classList.contains('sb-top-menu-fixed')) {
+                return true;
+            }
+        }
+        var parent = item.parentElement;
+        while (parent) {
+            if (parent.classList && parent.classList.contains('sb-flyout-nested-fixed')) {
+                return true;
+            }
+            if (parent.classList && parent.classList.contains('sidenav-menu') && parent.classList.contains('sb-top-menu-fixed')) {
+                return true;
+            }
+            parent = parent.parentElement;
+        }
         return false;
     }
 
@@ -1114,6 +1182,24 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
 
         if (forceLeft || (overflowRight && !overflowLeft) || (overflowRight && overflowLeft)) {
             item.classList.add('sb-flyout-left');
+        }
+
+        if (usesFixedFlyoutPosition(item)) {
+            panel.classList.add('sb-flyout-nested-fixed');
+            panel.style.setProperty('position', 'fixed', 'important');
+            panel.style.setProperty('top', Math.round(toggleRect.top) + 'px', 'important');
+            panel.style.setProperty('max-height', Math.max(180, window.innerHeight - toggleRect.top - 12) + 'px', 'important');
+            panel.style.setProperty('overflow-x', 'hidden', 'important');
+            panel.style.setProperty('overflow-y', 'auto', 'important');
+            if (item.classList.contains('sb-flyout-left')) {
+                panel.style.setProperty('left', Math.max(viewportPad, Math.round(toggleRect.left - gap - panelWidth)) + 'px', 'important');
+                panel.style.setProperty('right', 'auto', 'important');
+            } else {
+                panel.style.setProperty('left', Math.round(toggleRect.right + gap) + 'px', 'important');
+                panel.style.setProperty('right', 'auto', 'important');
+            }
+            panel.style.setProperty('z-index', String(FLYOUT_Z_BASE + getFlyoutDepth(item) * 5), 'important');
+            return;
         }
 
         panel.style.setProperty('position', 'absolute', 'important');
@@ -1233,19 +1319,97 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     }
 
     function fixHorizontalMenuOverflow() {
-        sidenav.querySelectorAll('.sidenav-horizontal-wrapper, .sidenav-inner').forEach(function (el) {
-            el.style.setProperty('overflow', 'visible', 'important');
-        });
+        sidenav.style.setProperty('overflow', 'visible', 'important');
         var outerSidenav = sidenav.closest('.sidenav');
         if (outerSidenav) {
             outerSidenav.style.setProperty('overflow', 'visible', 'important');
         }
+        sidenav.querySelectorAll('.sidenav-horizontal-wrapper').forEach(function (el) {
+            el.style.setProperty('overflow-x', 'hidden', 'important');
+            el.style.setProperty('overflow-y', 'hidden', 'important');
+        });
+    }
+
+    function bindHorizontalScrollArrows() {
+        var prevBtn = sidenav.querySelector('.sidenav-horizontal-prev');
+        var nextBtn = sidenav.querySelector('.sidenav-horizontal-next');
+        var wrapper = sidenav.querySelector('.sidenav-horizontal-wrapper');
+        var inner = wrapper ? wrapper.querySelector('.sidenav-inner') : sidenav.querySelector('.sidenav-inner');
+        if (!prevBtn || !nextBtn || !wrapper || !inner || inner._mahaScrollBound) {
+            return;
+        }
+        inner._mahaScrollBound = true;
+
+        function getPosition() {
+            return parseInt(inner.style.marginLeft || '0', 10) || 0;
+        }
+
+        function syncArrowState() {
+            var wrapperW = Math.round(wrapper.getBoundingClientRect().width);
+            var innerW = Math.round(inner.scrollWidth);
+            var pos = getPosition();
+            var maxScroll = Math.min(0, wrapperW - innerW);
+
+            if (pos >= 0) {
+                prevBtn.classList.add('disabled');
+            } else {
+                prevBtn.classList.remove('disabled');
+            }
+            if (innerW <= wrapperW + 1 || pos <= maxScroll + 1) {
+                nextBtn.classList.add('disabled');
+            } else {
+                nextBtn.classList.remove('disabled');
+            }
+        }
+
+        function slide(direction) {
+            var inst = sidenav.sidenavInstance;
+            if (inst && typeof inst._slide === 'function') {
+                inst._slide(direction);
+                window.requestAnimationFrame(syncArrowState);
+                return;
+            }
+
+            var step = Math.max(140, Math.round(wrapper.getBoundingClientRect().width * 0.65));
+            var pos = getPosition();
+            var wrapperW = Math.round(wrapper.getBoundingClientRect().width);
+            var innerW = Math.round(inner.scrollWidth);
+            var maxScroll = Math.min(0, wrapperW - innerW);
+
+            if (direction === 'next') {
+                pos = Math.max(maxScroll, pos - step);
+            } else {
+                pos = Math.min(0, pos + step);
+            }
+            inner.style.marginLeft = pos + 'px';
+            syncArrowState();
+        }
+
+        prevBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (prevBtn.classList.contains('disabled')) return;
+            closeAllMenus();
+            slide('prev');
+        }, true);
+
+        nextBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (nextBtn.classList.contains('disabled')) return;
+            closeAllMenus();
+            slide('next');
+        }, true);
+
+        window.addEventListener('resize', syncArrowState);
+        window.requestAnimationFrame(syncArrowState);
     }
 
     function patchThemeSidenavInstance() {
         fixHorizontalMenuOverflow();
         var inst = sidenav.sidenavInstance;
         if (!inst || inst._mahaTopMenuPatched) {
+            bindHorizontalScrollArrows();
             return;
         }
         inst._mahaTopMenuPatched = true;
@@ -1253,8 +1417,13 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
             inst.closeAll = closeAllMenus;
         }
         if (inst._wrapper) {
-            inst._wrapper.style.setProperty('overflow', 'visible', 'important');
+            inst._wrapper.style.setProperty('overflow-x', 'hidden', 'important');
+            inst._wrapper.style.setProperty('overflow-y', 'hidden', 'important');
         }
+        if (typeof inst.update === 'function') {
+            inst.update();
+        }
+        bindHorizontalScrollArrows();
     }
 
     closeAllTopMenus();
@@ -1402,9 +1571,13 @@ body > .sb-flyout-portal:not(.sb-flyout-open) {
     window.layoutSidenav = window.layoutSidenav || {};
     window.layoutSidenav.closeAll = closeAllMenus;
 
-    window.addEventListener('load', patchThemeSidenavInstance);
+    window.addEventListener('load', function () {
+        patchThemeSidenavInstance();
+        window.setTimeout(patchThemeSidenavInstance, 300);
+    });
     if (document.readyState === 'complete') {
         patchThemeSidenavInstance();
+        window.setTimeout(patchThemeSidenavInstance, 300);
     }
 })();
 </script>

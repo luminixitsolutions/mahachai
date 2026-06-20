@@ -27,6 +27,71 @@ if (!function_exists('ensure_tbl_users2_partial_reporting_column')) {
     }
 }
 
+if (!function_exists('maha_ensure_users_options2_column')) {
+    function maha_ensure_users_options2_column()
+    {
+        global $conn;
+        if (!$conn) {
+            return;
+        }
+        $q = @$conn->query("SHOW COLUMNS FROM tbl_users LIKE 'Options2'");
+        if (!$q || $q->num_rows === 0) {
+            @$conn->query("ALTER TABLE tbl_users ADD COLUMN `Options2` MEDIUMTEXT NULL");
+            return;
+        }
+        $row = $q->fetch_assoc();
+        $type = strtolower((string) ($row['Type'] ?? ''));
+        if (strpos($type, 'text') === false && strpos($type, 'blob') === false) {
+            @$conn->query("ALTER TABLE tbl_users MODIFY COLUMN `Options2` MEDIUMTEXT NULL");
+        }
+    }
+}
+
+require_once dirname(__DIR__) . '/admin-sidebar-menu-permissions-render.php';
+
+if (isset($_POST['action']) && $_POST['action'] === 'SaveMenuAccess') {
+    header('Content-Type: application/json; charset=utf-8');
+    if (!$user_id) {
+        http_response_code(403);
+        echo json_encode(array('ok' => false, 'error' => 'Session expired'));
+        exit;
+    }
+    if (!emp_user_can_save_menu_access($user_id)) {
+        http_response_code(403);
+        echo json_encode(array('ok' => false, 'error' => 'You cannot edit menu access'));
+        exit;
+    }
+    $empId = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    if ($empId <= 0) {
+        http_response_code(400);
+        echo json_encode(array('ok' => false, 'error' => 'Invalid employee id'));
+        exit;
+    }
+    maha_ensure_users_options2_column();
+    $_POST['cp_menu_access_present'] = '1';
+    $built = emp_build_options2_from_post($_POST);
+    if ($built === null) {
+        http_response_code(400);
+        echo json_encode(array('ok' => false, 'error' => 'No menu access data received'));
+        exit;
+    }
+    if (!emp_persist_user_menu_access($conn, $empId, $built)) {
+        http_response_code(500);
+        echo json_encode(array(
+            'ok' => false,
+            'error' => 'Database save failed',
+            'detail' => isset($conn) && $conn ? $conn->error : '',
+        ));
+        exit;
+    }
+    echo json_encode(array(
+        'ok' => true,
+        'options2' => $built,
+        'employee_id' => $empId,
+    ));
+    exit;
+}
+
 if (isset($_POST['action']) && $_POST['action'] == 'Save') {
     if (!$user_id) {
         header('HTTP/1.1 403 Forbidden');
@@ -36,8 +101,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'Save') {
 try {
 
 ensure_tbl_users2_partial_reporting_column();
+maha_ensure_users_options2_column();
 
-$id = isset($_POST['id']) ? $_POST['id'] : '';
+    $id = isset($_POST['id']) ? $_POST['id'] : '';
 $Fname = addslashes(trim($_POST['Fname'] ?? ''));
 $Mname = addslashes(trim($_POST['Mname'] ?? ''));
 $Lname = addslashes(trim($_POST['Lname'] ?? ''));
@@ -67,19 +133,14 @@ $SalaryEffectiveFrom = addslashes(trim($_POST['SalaryEffectiveFrom'] ?? ''));
 $Status = $_POST['Status'] ?? '1';
 $CatId = $_POST['CatId'] ?? '';
 $Roll = $_POST['Roll'] ?? '';
-/*if($_POST['Options']!=''){
-$Options = implode(",", $_POST['Options']);
-}
-else{
-   $Options = 0; 
-}*/
 
-
-if(!empty($_POST['Options']) && is_array($_POST['Options'])){
-$Options2 = implode(",", $_POST['Options']);
-}
-else{
-   $Options2 = 0; 
+$canSaveMenuAccess = emp_user_can_save_menu_access($user_id);
+$isEditEmployee = ($id !== '' && $id !== null);
+$Options2FromPost = null;
+$Options2 = '0';
+if (!$isEditEmployee) {
+    $Options2FromPost = emp_build_options2_from_post($_POST);
+    $Options2 = emp_resolve_options2_for_insert($_POST);
 }
 
 if(!empty($_POST['ExpCatId']) && is_array($_POST['ExpCatId'])){
@@ -414,6 +475,11 @@ foreach ($paymentData as $i => $data) {
  $updateString = implode(', ', $updateFields);
  
 $UnderFrId = addslashes(trim($_POST['UnderFrId'] ?? ''));
+$editorsRequiringUnderFr = array(2651, 2650, 22170, 2799);
+if (in_array((int) $user_id, $editorsRequiringUnderFr, true) && (int) $UnderFrId <= 0) {
+    echo '0';
+    exit;
+}
 $ZoneId = '';
 if ($UnderFrId !== '') {
     $sql55 = "SELECT ZoneId FROM tbl_users WHERE id='$UnderFrId'";
@@ -492,12 +558,19 @@ if($id == ''){
             ? "'" . mysqli_real_escape_string($conn, date('Y-m-d H:i:s')) . "'"
             : 'NULL';
 
-        $sql = "INSERT INTO tbl_users SET ProfitLossReport='$ProfitLossReport',ReceipeSosReply='$ReceipeSosReply',att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',vedSubzones='$vedSubzones',nsovedSubzones='$nsovedSubzones',DisabledAttPhoto='$DisabledAttPhoto',vedfranchiseCheck='$vedfranchiseCheck',nsovedfranchiseCheck='$nsovedfranchiseCheck',vedzones='$vedzones',nsovedzones='$nsovedzones',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',CashHandover='$CashHandover',InternshipEmp='$InternshipEmp',EmpAppDashboard='$EmpAppDashboard',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',EmpStatus='$EmpStatus',VendorExpSecOpt='$VendorExpSecOpt',MarkAttendance='$MarkAttendance',PettyCash='$PettyCash',PettyAmount='$PettyAmount',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferName='$ReferName',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',MonthlySalary='$MonthlySalary',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',RefPhone='$RefPhone',RefPhone2='$RefPhone2',RefEmailId='$RefEmailId',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',SalaryType='$SalaryType',CreditSalaryStatus='$CreditSalaryStatus',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',CreatedDate='$CreatedDate',CreatedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',Options2='$Options2',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',PerDaySalary='$PerDaySalary',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',UnderFrId='$UnderFrId',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
+        $Options2Esc = mysqli_real_escape_string($conn, (string) $Options2);
+        $sql = "INSERT INTO tbl_users SET ProfitLossReport='$ProfitLossReport',ReceipeSosReply='$ReceipeSosReply',att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',vedSubzones='$vedSubzones',nsovedSubzones='$nsovedSubzones',DisabledAttPhoto='$DisabledAttPhoto',vedfranchiseCheck='$vedfranchiseCheck',nsovedfranchiseCheck='$nsovedfranchiseCheck',vedzones='$vedzones',nsovedzones='$nsovedzones',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',CashHandover='$CashHandover',InternshipEmp='$InternshipEmp',EmpAppDashboard='$EmpAppDashboard',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',EmpStatus='$EmpStatus',VendorExpSecOpt='$VendorExpSecOpt',MarkAttendance='$MarkAttendance',PettyCash='$PettyCash',PettyAmount='$PettyAmount',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferName='$ReferName',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',MonthlySalary='$MonthlySalary',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',RefPhone='$RefPhone',RefPhone2='$RefPhone2',RefEmailId='$RefEmailId',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',SalaryType='$SalaryType',CreditSalaryStatus='$CreditSalaryStatus',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',CreatedDate='$CreatedDate',CreatedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',Options2='$Options2Esc',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',PerDaySalary='$PerDaySalary',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',UnderFrId='$UnderFrId',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
         
         if (!$conn->query($sql)) {
             throw new Exception("Error inserting employee: " . $conn->error);
         }
         $EmpId = mysqli_insert_id($conn);
+
+        if ($canSaveMenuAccess) {
+            if (!emp_persist_user_options2($conn, (int) $EmpId, (string) $Options2)) {
+                throw new Exception('Error saving menu access permissions');
+            }
+        }
 
         $salaryEffectiveFrom = maha_resolve_salary_effective_from($SalaryEffectiveFrom, $JoinDate);
         if (!maha_insert_employee_salary_history($EmpId, $SalaryType, $PerDaySalary, $MonthlySalary, $salaryEffectiveFrom, (int) $user_id)) {
@@ -708,13 +781,13 @@ if($id == ''){
         // Build UPDATE query
         $sql = "UPDATE tbl_users SET att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',InternshipEmp='$InternshipEmp',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferName='$ReferName',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',RefPhone='$RefPhone',RefPhone2='$RefPhone2',RefEmailId='$RefEmailId',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',CreditSalaryStatus='$CreditSalaryStatus',Barcode='$Barcode',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',ModifiedDate='$CreatedDate',ModifiedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
       
-        if($user_id == 2651 || $user_id == 2650 || $user_id == 5 || $user_id == 415){
-            $sql.=",PettyCash='$PettyCash',PettyAmount='$PettyAmount',Options2='$Options2',UnderFrId='$UnderFrId'";
+        if($canSaveMenuAccess){
+            $sql.=",PettyCash='$PettyCash',PettyAmount='$PettyAmount',UnderFrId='$UnderFrId'";
         }
         if($user_id == 2651 || $user_id == 2650){
             $sql.=",ProfitLossReport='$ProfitLossReport',ReceipeSosReply='$ReceipeSosReply',vedSubzones='$vedSubzones',nsovedSubzones='$nsovedSubzones',DisabledAttPhoto='$DisabledAttPhoto',vedfranchiseCheck='$vedfranchiseCheck',nsovedfranchiseCheck='$nsovedfranchiseCheck',vedzones='$vedzones',nsovedzones='$nsovedzones',CashHandover='$CashHandover',EmpAppDashboard='$EmpAppDashboard',EmpStatus='$EmpStatus',VendorExpSecOpt='$VendorExpSecOpt',MarkAttendance='$MarkAttendance'";
         }
-        if($user_id == 2650 || $user_id == 22170 || $user_id == 2799){
+        if($user_id == 2650 || $user_id == 22170 || $user_id == 2799 || $user_id == 2651 || $user_id == 19957){
         $sql.=",MonthlySalary='$MonthlySalary',PerDaySalary='$PerDaySalary',SalaryType='$SalaryType',UnderFrId='$UnderFrId'";
         }
 
@@ -723,6 +796,9 @@ if($id == ''){
         if (!$conn->query($sql)) {
             throw new Exception("Error updating employee: " . $conn->error);
         }
+
+        // Menu access on edit is saved only via SaveMenuAccess (before main form submit).
+        // Do not touch Options2 here — the large form POST often drops Options2_csv and was resetting permissions to 0.
 
         $canEditSalary = ($user_id == 2650 || $user_id == 22170 || $user_id == 2799);
         if ($canEditSalary && $old_data) {
