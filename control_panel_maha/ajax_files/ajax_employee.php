@@ -13,6 +13,20 @@ require_once __DIR__ . '/employee_log_functions.php';
 require_once __DIR__ . '/employee_password_functions.php';
 require_once __DIR__ . '/employee_salary_functions.php';
 
+if (!function_exists('ensure_tbl_users2_last_work_date_column')) {
+    function ensure_tbl_users2_last_work_date_column()
+    {
+        global $conn;
+        if (!$conn) {
+            return;
+        }
+        $q = @$conn->query("SHOW COLUMNS FROM tbl_users2 LIKE 'LastWorkDate'");
+        if ($q && $q->num_rows === 0) {
+            @$conn->query("ALTER TABLE tbl_users2 ADD COLUMN `LastWorkDate` DATE NULL DEFAULT NULL");
+        }
+    }
+}
+
 if (!function_exists('ensure_tbl_users2_partial_reporting_column')) {
     function ensure_tbl_users2_partial_reporting_column()
     {
@@ -23,6 +37,20 @@ if (!function_exists('ensure_tbl_users2_partial_reporting_column')) {
         $q = @$conn->query("SHOW COLUMNS FROM tbl_users2 LIKE 'PartialReporting'");
         if ($q && $q->num_rows === 0) {
             @$conn->query("ALTER TABLE tbl_users2 ADD COLUMN `PartialReporting` INT(11) NOT NULL DEFAULT 0");
+        }
+    }
+}
+
+if (!function_exists('ensure_tbl_users2_company_number_column')) {
+    function ensure_tbl_users2_company_number_column()
+    {
+        global $conn;
+        if (!$conn) {
+            return;
+        }
+        $q = @$conn->query("SHOW COLUMNS FROM tbl_users2 LIKE 'CompanyNumber'");
+        if ($q && $q->num_rows === 0) {
+            @$conn->query("ALTER TABLE tbl_users2 ADD COLUMN `CompanyNumber` VARCHAR(50) NULL DEFAULT NULL");
         }
     }
 }
@@ -101,6 +129,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'Save') {
 try {
 
 ensure_tbl_users2_partial_reporting_column();
+ensure_tbl_users2_last_work_date_column();
+ensure_tbl_users2_company_number_column();
 maha_ensure_users_options2_column();
 
     $id = isset($_POST['id']) ? $_POST['id'] : '';
@@ -301,6 +331,7 @@ $UnderUser = addslashes(trim($_POST['UnderUser'] ?? ''));
 $ReportingMgr = addslashes(trim($_POST['ReportingMgr'] ?? ''));
 $ResignStatus = addslashes(trim($_POST['ResignStatus'] ?? ''));
 $ResignDate = addslashes(trim($_POST['ResignDate'] ?? ''));
+$LastWorkDate = addslashes(trim($_POST['LastWorkDate'] ?? ''));
 $ResignComment = addslashes(trim($_POST['ResignComment'] ?? ''));
 $SalaryType = addslashes(trim($_POST['SalaryType'] ?? ''));
 $CreditSalaryStatus = addslashes(trim($_POST['CreditSalaryStatus'] ?? ''));
@@ -309,9 +340,19 @@ $MainBrEmp = addslashes(trim($_POST['MainBrEmp'] ?? ''));
 $RestrictAttAfter1015 = (isset($_POST['RestrictAttAfter1015']) && (string) $_POST['RestrictAttAfter1015'] === '1') ? '1' : '0';
 $UnderByUser = addslashes(trim($_POST['UnderByUser'] ?? ''));
 
-$RefPhone = addslashes(trim($_POST['RefPhone'] ?? ''));
-$RefPhone2 = addslashes(trim($_POST['RefPhone2'] ?? ''));
-$RefEmailId = addslashes(trim($_POST['RefEmailId'] ?? ''));
+$PersonalName1 = addslashes(trim($_POST['PersonalName1'] ?? ''));
+$PersonalRelation1 = addslashes(trim($_POST['PersonalRelation1'] ?? ''));
+$PersonalPhone1 = addslashes(trim($_POST['PersonalPhone1'] ?? ''));
+$PersonalName2 = addslashes(trim($_POST['PersonalName2'] ?? ''));
+$PersonalRelation2 = addslashes(trim($_POST['PersonalRelation2'] ?? ''));
+$PersonalPhone2 = addslashes(trim($_POST['PersonalPhone2'] ?? ''));
+$ProfName1 = addslashes(trim($_POST['ProfName1'] ?? ''));
+$ProfDesignation1 = addslashes(trim($_POST['ProfDesignation1'] ?? ''));
+$ProfPhone1 = addslashes(trim($_POST['ProfPhone1'] ?? ''));
+$ProfName2 = addslashes(trim($_POST['ProfName2'] ?? ''));
+$ProfDesignation2 = addslashes(trim($_POST['ProfDesignation2'] ?? ''));
+$ProfPhone2 = addslashes(trim($_POST['ProfPhone2'] ?? ''));
+$CompanyNumber = addslashes(trim($_POST['CompanyNumber'] ?? ''));
 
 $NomineeName = addslashes(trim($_POST['NomineeName'] ?? ''));
 $NomineeRelation = addslashes(trim($_POST['NomineeRelation'] ?? ''));
@@ -323,7 +364,6 @@ $OtherEmp = addslashes(trim($_POST['OtherEmp'] ?? ''));
 $InternshipEmp = addslashes(trim($_POST['InternshipEmp'] ?? ''));
 $NoticePeriod = addslashes(trim($_POST['NoticePeriod'] ?? ''));
 $ReferCode = addslashes(trim($_POST['ReferCode'] ?? ''));
-$ReferName = addslashes(trim($_POST['ReferName'] ?? ''));
 $ReferId = addslashes(trim($_POST['ReferId'] ?? ''));
 
 $Education = addslashes(trim($_POST['Education'] ?? ''));
@@ -559,7 +599,7 @@ if($id == ''){
             : 'NULL';
 
         $Options2Esc = mysqli_real_escape_string($conn, (string) $Options2);
-        $sql = "INSERT INTO tbl_users SET ProfitLossReport='$ProfitLossReport',ReceipeSosReply='$ReceipeSosReply',att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',vedSubzones='$vedSubzones',nsovedSubzones='$nsovedSubzones',DisabledAttPhoto='$DisabledAttPhoto',vedfranchiseCheck='$vedfranchiseCheck',nsovedfranchiseCheck='$nsovedfranchiseCheck',vedzones='$vedzones',nsovedzones='$nsovedzones',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',CashHandover='$CashHandover',InternshipEmp='$InternshipEmp',EmpAppDashboard='$EmpAppDashboard',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',EmpStatus='$EmpStatus',VendorExpSecOpt='$VendorExpSecOpt',MarkAttendance='$MarkAttendance',PettyCash='$PettyCash',PettyAmount='$PettyAmount',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferName='$ReferName',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',MonthlySalary='$MonthlySalary',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',RefPhone='$RefPhone',RefPhone2='$RefPhone2',RefEmailId='$RefEmailId',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',SalaryType='$SalaryType',CreditSalaryStatus='$CreditSalaryStatus',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',CreatedDate='$CreatedDate',CreatedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',Options2='$Options2Esc',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',PerDaySalary='$PerDaySalary',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',UnderFrId='$UnderFrId',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
+        $sql = "INSERT INTO tbl_users SET ProfitLossReport='$ProfitLossReport',ReceipeSosReply='$ReceipeSosReply',att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',vedSubzones='$vedSubzones',nsovedSubzones='$nsovedSubzones',DisabledAttPhoto='$DisabledAttPhoto',vedfranchiseCheck='$vedfranchiseCheck',nsovedfranchiseCheck='$nsovedfranchiseCheck',vedzones='$vedzones',nsovedzones='$nsovedzones',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',CashHandover='$CashHandover',InternshipEmp='$InternshipEmp',EmpAppDashboard='$EmpAppDashboard',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',EmpStatus='$EmpStatus',VendorExpSecOpt='$VendorExpSecOpt',MarkAttendance='$MarkAttendance',PettyCash='$PettyCash',PettyAmount='$PettyAmount',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',MonthlySalary='$MonthlySalary',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',SalaryType='$SalaryType',CreditSalaryStatus='$CreditSalaryStatus',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',CreatedDate='$CreatedDate',CreatedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',Options2='$Options2Esc',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',PerDaySalary='$PerDaySalary',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',UnderFrId='$UnderFrId',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
         
         if (!$conn->query($sql)) {
             throw new Exception("Error inserting employee: " . $conn->error);
@@ -578,10 +618,10 @@ if($id == ''){
         }
 
         // Insert week off day
-        $sql = "INSERT INTO tbl_users2 (UserId, RestrictAttAfter1015, WeekOffDay,cpzones,cpsubzones,cpfranchise,Grade,Cl,El,att_zones,att_subzones,bdm_zones,bdm_subzones,PartialReporting,InactiveAt)
-                VALUES ('$EmpId', '$RestrictAttAfter1015', '$WeekOffDay','$cpzones','$cpsubzones','$cpfranchise','$Grade','$Cl','$El','$att_zones','$att_subzones','$bdm_zones','$bdm_subzones','$PartialReporting',$inactiveAtSqlVal)
+        $sql = "INSERT INTO tbl_users2 (UserId, RestrictAttAfter1015, WeekOffDay,cpzones,cpsubzones,cpfranchise,Grade,Cl,El,att_zones,att_subzones,bdm_zones,bdm_subzones,PartialReporting,InactiveAt,LastWorkDate,CompanyNumber,PersonalName1,PersonalRelation1,PersonalPhone1,PersonalName2,PersonalRelation2,PersonalPhone2,ProfName1,ProfDesignation1,ProfPhone1,ProfName2,ProfDesignation2,ProfPhone2)
+                VALUES ('$EmpId', '$RestrictAttAfter1015', '$WeekOffDay','$cpzones','$cpsubzones','$cpfranchise','$Grade','$Cl','$El','$att_zones','$att_subzones','$bdm_zones','$bdm_subzones','$PartialReporting',$inactiveAtSqlVal,'$LastWorkDate','$CompanyNumber','$PersonalName1','$PersonalRelation1','$PersonalPhone1','$PersonalName2','$PersonalRelation2','$PersonalPhone2','$ProfName1','$ProfDesignation1','$ProfPhone1','$ProfName2','$ProfDesignation2','$ProfPhone2')
                 ON DUPLICATE KEY UPDATE 
-                RestrictAttAfter1015='$RestrictAttAfter1015',WeekOffDay='$WeekOffDay',cpsubzones='$cpsubzones',cpzones='$cpzones',cpfranchise='$cpfranchise',Grade='$Grade',Cl='$Cl',El='$El',att_zones='$att_zones',att_subzones='$att_subzones',bdm_zones='$bdm_zones',bdm_subzones='$bdm_subzones',PartialReporting='$PartialReporting',InactiveAt=$inactiveAtSqlVal";
+                RestrictAttAfter1015='$RestrictAttAfter1015',WeekOffDay='$WeekOffDay',cpsubzones='$cpsubzones',cpzones='$cpzones',cpfranchise='$cpfranchise',Grade='$Grade',Cl='$Cl',El='$El',att_zones='$att_zones',att_subzones='$att_subzones',bdm_zones='$bdm_zones',bdm_subzones='$bdm_subzones',PartialReporting='$PartialReporting',InactiveAt=$inactiveAtSqlVal,LastWorkDate='$LastWorkDate',CompanyNumber='$CompanyNumber',PersonalName1='$PersonalName1',PersonalRelation1='$PersonalRelation1',PersonalPhone1='$PersonalPhone1',PersonalName2='$PersonalName2',PersonalRelation2='$PersonalRelation2',PersonalPhone2='$PersonalPhone2',ProfName1='$ProfName1',ProfDesignation1='$ProfDesignation1',ProfPhone1='$ProfPhone1',ProfName2='$ProfName2',ProfDesignation2='$ProfDesignation2',ProfPhone2='$ProfPhone2'";
         
         if (!$conn->query($sql)) {
             throw new Exception("Error inserting week off day: " . $conn->error);
@@ -762,6 +802,40 @@ if($id == ''){
         $old_record = getRecord($sql_old);
         $old_data = $old_record ? $old_record : null;
 
+        $empShowAllTabs = in_array((int) $user_id, array(2650, 2651), true);
+        if (!$empShowAllTabs && $old_data) {
+            $oldU2 = getRecord("SELECT * FROM tbl_users2 WHERE UserId='$id'");
+            $preserveEsc = function ($v) {
+                return addslashes((string) ($v ?? ''));
+            };
+            if (is_array($oldU2)) {
+                $cpzones = $preserveEsc($oldU2['cpzones'] ?? '0');
+                $cpsubzones = $preserveEsc($oldU2['cpsubzones'] ?? '0');
+                $cpfranchise = $preserveEsc($oldU2['cpfranchise'] ?? '0');
+                $att_zones = $preserveEsc($oldU2['att_zones'] ?? '0');
+                $att_subzones = $preserveEsc($oldU2['att_subzones'] ?? '0');
+                $bdm_zones = $preserveEsc($oldU2['bdm_zones'] ?? '0');
+                $bdm_subzones = $preserveEsc($oldU2['bdm_subzones'] ?? '0');
+            }
+            $AssignFranchiseAttendance = $preserveEsc($old_data['AssignFranchiseAttendance'] ?? '0');
+            $AssignFranchiseBdm = $preserveEsc($old_data['AssignFranchiseBdm'] ?? '0');
+            $AssignFranchiseVedExp = $preserveEsc($old_data['AssignFranchiseVedExp'] ?? '0');
+            $AssignFranchiseNsoVedExp = $preserveEsc($old_data['AssignFranchiseNsoVedExp'] ?? '0');
+            $vedzones = $preserveEsc($old_data['vedzones'] ?? '0');
+            $nsovedzones = $preserveEsc($old_data['nsovedzones'] ?? '0');
+            $vedSubzones = $preserveEsc($old_data['vedSubzones'] ?? '0');
+            $nsovedSubzones = $preserveEsc($old_data['nsovedSubzones'] ?? '0');
+            $vedfranchiseCheck = $preserveEsc($old_data['vedfranchiseCheck'] ?? '0');
+            $nsovedfranchiseCheck = $preserveEsc($old_data['nsovedfranchiseCheck'] ?? '0');
+            $InternshipEmp = $preserveEsc($old_data['InternshipEmp'] ?? '0');
+            $OtherEmp = $preserveEsc($old_data['OtherEmp'] ?? '0');
+            $zone = $preserveEsc($old_data['zone'] ?? '0');
+            $CocoFranchiseAccess = $preserveEsc($old_data['CocoFranchiseAccess'] ?? '0');
+            if (!empty($old_data['cpzones'])) {
+                $cpzones = $preserveEsc($old_data['cpzones']);
+            }
+        }
+
         $PhoneEsc = addslashes(trim($Phone));
         $sqlPhoneDup = "SELECT id FROM tbl_users WHERE Phone='$PhoneEsc' AND Status='1' AND Roll NOT IN(1,5,55,9,22,23,63) AND id!='$id'";
         if (getRow($sqlPhoneDup) > 0) {
@@ -779,7 +853,7 @@ if($id == ''){
         }
 
         // Build UPDATE query
-        $sql = "UPDATE tbl_users SET att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',InternshipEmp='$InternshipEmp',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferName='$ReferName',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',RefPhone='$RefPhone',RefPhone2='$RefPhone2',RefEmailId='$RefEmailId',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',CreditSalaryStatus='$CreditSalaryStatus',Barcode='$Barcode',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',ModifiedDate='$CreatedDate',ModifiedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
+        $sql = "UPDATE tbl_users SET att_task_show='$att_task_show',ticketshow='$ticketshow',Gender='$Gender',cofofr='$cofofr',cpzones='$cpzones',AssignFranchiseNsoVedExp='$AssignFranchiseNsoVedExp',TotalHours='$TotalHours',OpenTime='$OpenTime',CloseTime='$CloseTime',OpenTime24='$OpenTime24',CloseTime24='$CloseTime24',WorkingHrs='$WorkingHrs',InternshipEmp='$InternshipEmp',AssignFranchiseBdm='$AssignFranchiseBdm',BdmCheckpoint='$BdmCheckpoint',EsicNo='$EsicNo',EmpScheme='$EmpScheme',ReferId='$ReferId',IncrementPer='$IncrementPer',Increment='$Increment',AnniversaryDate='$AnniversaryDate',UnderByBdm='$UnderByBdm',ApproveBy='$ApproveBy',ReJoinDate='$ReJoinDate',YearlyWeekOff='$YearlyWeekOff',MonthlyWeekOff='$MonthlyWeekOff',NsoVedPay='$NsoVedPay',AssignFranchiseVedExp='$AssignFranchiseVedExp',AssignFranchiseAttendance='$AssignFranchiseAttendance',Education='$Education',UanNo='$UanNo',ReferCode='$ReferCode',NoticePeriod='$NoticePeriod',OtherEmp='$OtherEmp',MgrCheckpoint='$MgrCheckpoint',DeclarationPhoto='$DeclarationPhoto',ZoneId='$ZoneId',DeclarationPdf='$DeclarationPdf',NomineeName='$NomineeName',NomineeRelation='$NomineeRelation',NomineePhone='$NomineePhone',NomineeAadharNo='$NomineeAadharNo',zone='$zone',CocoFranchiseAccess='$CocoFranchiseAccess',CreditSalaryStatus='$CreditSalaryStatus',Barcode='$Barcode',Fname='$Fname',Mname='$Mname',Lname='$Lname',Phone='$Phone',EmailId='$EmailId',Password='$Password',Phone2='$Phone2',CountryId='$CountryId',StateId='$StateId',CityId='$CityId',Address='$Address',Pincode='$Pincode',Status='$Status',Photo='$Photo',Roll='$Roll',ModifiedDate='$CreatedDate',ModifiedBy='$user_id',GstNo='$GstNo',Photo2='$Photo2',Photo3='$Photo3',Details='$Details',CatId='$CatId',PanNo='$PanNo',CompId='$CompId',BranchId='$BranchId',FatherPhone='$FatherPhone',Designation='$Designation',Dob='$Dob',AadharNo='$AadharNo',BloodGroup='$BloodGroup',JoinDate='$JoinDate',EmailId2='$EmailId2',AccountName='$AccountName',BankName='$BankName',AccountNo='$AccountNo',IfscCode='$IfscCode',Branch='$Branch',UpiNo='$UpiNo',UnderUser='$UnderUser',ReportingMgr='$ReportingMgr',ResignStatus='$ResignStatus',ResignDate='$ResignDate',ResignComment='$ResignComment',ExpCatId='$ExpCatId',MainBrEmp='$MainBrEmp',UnderByUser='$UnderByUser',$updateString";
       
         if($canSaveMenuAccess){
             $sql.=",PettyCash='$PettyCash',PettyAmount='$PettyAmount',UnderFrId='$UnderFrId'";
@@ -830,10 +904,10 @@ if($id == ''){
             }
         }
 
-         $sql = "INSERT INTO tbl_users2 (UserId, RestrictAttAfter1015, WeekOffDay,cpzones,cpsubzones,cpfranchise,Grade,Cl,El,att_zones,att_subzones,bdm_zones,bdm_subzones,PartialReporting)
-                VALUES ('$id', '$RestrictAttAfter1015', '$WeekOffDay','$cpzones','$cpsubzones','$cpfranchise','$Grade','$Cl','$El','$att_zones','$att_subzones','$bdm_zones','$bdm_subzones','$PartialReporting')
+         $sql = "INSERT INTO tbl_users2 (UserId, RestrictAttAfter1015, WeekOffDay,cpzones,cpsubzones,cpfranchise,Grade,Cl,El,att_zones,att_subzones,bdm_zones,bdm_subzones,PartialReporting,LastWorkDate,CompanyNumber,PersonalName1,PersonalRelation1,PersonalPhone1,PersonalName2,PersonalRelation2,PersonalPhone2,ProfName1,ProfDesignation1,ProfPhone1,ProfName2,ProfDesignation2,ProfPhone2)
+                VALUES ('$id', '$RestrictAttAfter1015', '$WeekOffDay','$cpzones','$cpsubzones','$cpfranchise','$Grade','$Cl','$El','$att_zones','$att_subzones','$bdm_zones','$bdm_subzones','$PartialReporting','$LastWorkDate','$CompanyNumber','$PersonalName1','$PersonalRelation1','$PersonalPhone1','$PersonalName2','$PersonalRelation2','$PersonalPhone2','$ProfName1','$ProfDesignation1','$ProfPhone1','$ProfName2','$ProfDesignation2','$ProfPhone2')
                 ON DUPLICATE KEY UPDATE 
-                RestrictAttAfter1015='$RestrictAttAfter1015',WeekOffDay='$WeekOffDay',cpsubzones='$cpsubzones',cpzones='$cpzones',cpfranchise='$cpfranchise',Grade='$Grade',Cl='$Cl',El='$El',att_zones='$att_zones',att_subzones='$att_subzones',bdm_zones='$bdm_zones',bdm_subzones='$bdm_subzones',PartialReporting='$PartialReporting'" . $inactiveAtUpdateFrag;
+                RestrictAttAfter1015='$RestrictAttAfter1015',WeekOffDay='$WeekOffDay',cpsubzones='$cpsubzones',cpzones='$cpzones',cpfranchise='$cpfranchise',Grade='$Grade',Cl='$Cl',El='$El',att_zones='$att_zones',att_subzones='$att_subzones',bdm_zones='$bdm_zones',bdm_subzones='$bdm_subzones',PartialReporting='$PartialReporting',LastWorkDate='$LastWorkDate',CompanyNumber='$CompanyNumber',PersonalName1='$PersonalName1',PersonalRelation1='$PersonalRelation1',PersonalPhone1='$PersonalPhone1',PersonalName2='$PersonalName2',PersonalRelation2='$PersonalRelation2',PersonalPhone2='$PersonalPhone2',ProfName1='$ProfName1',ProfDesignation1='$ProfDesignation1',ProfPhone1='$ProfPhone1',ProfName2='$ProfName2',ProfDesignation2='$ProfDesignation2',ProfPhone2='$ProfPhone2'" . $inactiveAtUpdateFrag;
         if (!$conn->query($sql)) {
             throw new Exception("Error updating week off day: " . $conn->error);
         }

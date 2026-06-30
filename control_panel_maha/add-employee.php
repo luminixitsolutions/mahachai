@@ -389,7 +389,8 @@ if (isset($row7['Options2']) && trim((string) $row7['Options2']) !== '' && trim(
 $row7['Options'] = ($empOptionsRaw !== '')
     ? array_values(array_filter(array_map('trim', explode(',', $empOptionsRaw))))
     : array();
-$empCanEditMenuAccess = ($user_id == 22170 || $user_id == 2651 || $user_id == 2650);
+$empShowAllTabs = ($user_id == 2650 || $user_id == 2651);
+$empCanEditMenuAccess = $empShowAllTabs;
 $empMenuOptionsCsv = '';
 if ($empCanEditMenuAccess) {
     $csvIds = array();
@@ -440,6 +441,9 @@ $row71['att_zones'] = array_filter(array_map('trim', explode(',', isset($row71['
 $row71['att_subzones'] = array_filter(array_map('trim', explode(',', isset($row71['att_subzones']) ? (string) $row71['att_subzones'] : '')));
 $row71['bdm_zones'] = array_filter(array_map('trim', explode(',', isset($row71['bdm_zones']) ? (string) $row71['bdm_zones'] : '')));
 $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row71['bdm_subzones']) ? (string) $row71['bdm_subzones'] : '')));
+$row71['PersonalName1'] = $row71['PersonalName1'] ?? $row7['ReferName'] ?? '';
+$row71['PersonalPhone1'] = $row71['PersonalPhone1'] ?? $row7['RefPhone'] ?? '';
+$row71['PersonalPhone2'] = $row71['PersonalPhone2'] ?? $row7['RefPhone2'] ?? '';
 
 function emp_form_section_start($title, $attrs = '', $activeDefault = false) {
     static $n = 0;
@@ -648,6 +652,14 @@ function emp_form_section_end() {
                                                 autocomplete="off">
                                             <div class="clearfix"></div>
                                         </div>
+
+                                        <div class="form-group col-md-3">
+                                            <label class="form-label">Company Number</label>
+                                            <input type="text" name="CompanyNumber" id="CompanyNumber" class="form-control"
+                                                placeholder="Company Number" value="<?php echo htmlspecialchars($row71['CompanyNumber'] ?? ''); ?>"
+                                                autocomplete="off">
+                                            <div class="clearfix"></div>
+                                        </div>
                                         
                                         <!--<div class="form-group col-md-2">
                                             <label class="form-label">Referral code </label>
@@ -677,41 +689,89 @@ function emp_form_section_end() {
                                         
                                        
                                         
-                                        <div class="form-group col-md-3">
-                                            <label class="form-label">Referral Name </label>
-                                            <input type="text" name="ReferName" id="ReferName" class="form-control"
-                                                placeholder="" value="<?php echo $row7["ReferName"]; ?>">
-                                            <div class="clearfix"></div>
-                                        </div>
-                                        
-                                        
-                                        <div class="form-group col-md-2">
-                                            <label class="form-label">Reference Mobile No </label>
-                                            <input type="text" name="RefPhone" id="RefPhone" class="form-control js-phone-10"
-                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
-                                                value="<?php echo $row7["RefPhone"]; ?>">
-                                            <div class="clearfix"></div>
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            <label class="form-label">Reference Mobile No 2</label>
-                                            <input type="text" name="RefPhone2" id="RefPhone2" class="form-control js-phone-10"
-                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
-                                                value="<?php echo $row7["RefPhone2"]; ?>">
-                                            <div class="clearfix"></div>
-                                        </div>
                                         <input type="hidden" id="ReferId" name="ReferId" value="<?php echo $row7["ReferId"]; ?>">
-                                        
-                                       <!-- <div class="form-group col-md-3">
-                                            <label class="form-label"> Father/Mother Contact No</label>
-                                            <input type="text" name="FatherPhone" class="form-control"
-                                                placeholder="" value="<?php echo $row7["FatherPhone"]; ?>">
+
+                                        <div class="form-group col-md-12 mt-2 mb-1">
+                                            <label class="form-label font-weight-bold mb-0">Personal Contacts</label>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Personal Name 1</label>
+                                            <input type="text" name="PersonalName1" id="PersonalName1" class="form-control"
+                                                placeholder="Name" value="<?php echo htmlspecialchars($row71['PersonalName1'] ?? ''); ?>">
                                             <div class="clearfix"></div>
-                                        </div>-->
-                                        <div class="form-group col-md-2">
-                                            <label class="form-label">Reference Email Id </label>
-                                            <input type="email" name="RefEmailId" id="RefEmailId" class="form-control"
-                                                placeholder="Email Id" value="<?php echo $row7["RefEmailId"]; ?>"
-                                                autocomplete="off">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Relation 1</label>
+                                            <input type="text" name="PersonalRelation1" id="PersonalRelation1" class="form-control"
+                                                placeholder="Relation" value="<?php echo htmlspecialchars($row71['PersonalRelation1'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Contact No. 1</label>
+                                            <input type="text" name="PersonalPhone1" id="PersonalPhone1" class="form-control js-phone-10"
+                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
+                                                value="<?php echo htmlspecialchars($row71['PersonalPhone1'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Personal Name 2</label>
+                                            <input type="text" name="PersonalName2" id="PersonalName2" class="form-control"
+                                                placeholder="Name" value="<?php echo htmlspecialchars($row71['PersonalName2'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Relation 2</label>
+                                            <input type="text" name="PersonalRelation2" id="PersonalRelation2" class="form-control"
+                                                placeholder="Relation" value="<?php echo htmlspecialchars($row71['PersonalRelation2'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Contact No. 2</label>
+                                            <input type="text" name="PersonalPhone2" id="PersonalPhone2" class="form-control js-phone-10"
+                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
+                                                value="<?php echo htmlspecialchars($row71['PersonalPhone2'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+
+                                        <div class="form-group col-md-12 mt-2 mb-1">
+                                            <label class="form-label font-weight-bold mb-0">Professional Contacts</label>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Professional Name 1</label>
+                                            <input type="text" name="ProfName1" id="ProfName1" class="form-control"
+                                                placeholder="Name" value="<?php echo htmlspecialchars($row71['ProfName1'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Designation &amp; Company 1</label>
+                                            <input type="text" name="ProfDesignation1" id="ProfDesignation1" class="form-control"
+                                                placeholder="Designation & Company" value="<?php echo htmlspecialchars($row71['ProfDesignation1'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Contact No. 1</label>
+                                            <input type="text" name="ProfPhone1" id="ProfPhone1" class="form-control js-phone-10"
+                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
+                                                value="<?php echo htmlspecialchars($row71['ProfPhone1'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Professional Name 2</label>
+                                            <input type="text" name="ProfName2" id="ProfName2" class="form-control"
+                                                placeholder="Name" value="<?php echo htmlspecialchars($row71['ProfName2'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Designation &amp; Company 2</label>
+                                            <input type="text" name="ProfDesignation2" id="ProfDesignation2" class="form-control"
+                                                placeholder="Designation & Company" value="<?php echo htmlspecialchars($row71['ProfDesignation2'] ?? ''); ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="form-label">Contact No. 2</label>
+                                            <input type="text" name="ProfPhone2" id="ProfPhone2" class="form-control js-phone-10"
+                                                placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
+                                                value="<?php echo htmlspecialchars($row71['ProfPhone2'] ?? ''); ?>">
                                             <div class="clearfix"></div>
                                         </div>
                                         
@@ -1373,14 +1433,21 @@ foreach ($rowPartialReporting as $result) {
                                             <div class="clearfix"></div>
                                         </div>
                                         
-                                          <div class="form-group col-md-3">
+                                          <div class="form-group col-md-2">
                                             <label class="form-label">Resign Date</label>
                                             <input type="date" name="ResignDate" class="form-control"
-                                                placeholder="" value="<?php echo $row7["ResignDate"]; ?>">
+                                                placeholder="" value="<?php echo (!empty($row7['ResignDate']) && $row7['ResignDate'] != '0000-00-00') ? $row7['ResignDate'] : ''; ?>">
+                                            <div class="clearfix"></div>
+                                        </div>
+
+                                          <div class="form-group col-md-2">
+                                            <label class="form-label">Last Work Date</label>
+                                            <input type="date" name="LastWorkDate" class="form-control"
+                                                placeholder="" value="<?php echo (!empty($row71['LastWorkDate']) && $row71['LastWorkDate'] != '0000-00-00') ? $row71['LastWorkDate'] : ''; ?>">
                                             <div class="clearfix"></div>
                                         </div>
                                         
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-4">
                                             <label class="form-label">Resign Comment</label>
                                             <input type="text" name="ResignComment" class="form-control"
                                                 placeholder="" value="<?php echo $row7["ResignComment"]; ?>">
@@ -1552,7 +1619,7 @@ foreach ($rowPartialReporting as $result) {
                                     </div>
                                      <?php emp_form_section_end(); ?>
 
-                                    <?php if ($user_id == 22170 || $user_id == 2651 || $user_id == 2650) { ?>
+                                    <?php if ($empShowAllTabs) { ?>
                                      <?php emp_form_section_start('Control Panel Menu Access', 'id="emp-menu-access"'); ?>
 <?php
 require_once __DIR__ . '/admin-sidebar-menu-permissions-render.php';
@@ -1560,7 +1627,6 @@ $empMenuOptions = isset($row7['Options']) && is_array($row7['Options']) ? $row7[
 ?>
     <?php emp_render_cp_menu_access($empMenuOptions); ?>
                                      <?php emp_form_section_end(); ?>
-<?php } ?>
 
                                      <?php emp_form_section_start('Employee Options', 'id="emp-options-access"'); ?>
                                     <div class="form-row">
@@ -2021,6 +2087,8 @@ if (!empty($bdmZoneIds) && is_array($bdmZoneIds)) {
 </div>
 <?php emp_form_section_end(); ?>                                
                                     
+<?php } // end tabs 8–14 for privileged users ?>
+
 <?php emp_form_section_start('Bank Account Detail'); ?>
 <div class="form-row">             
 <div class="form-group col-md-3">
@@ -3006,10 +3074,15 @@ if (AadharNo.length !== 12) {
         success: function(data) {
             var res = JSON.parse(data);
             $('#ReferId').val(res.id);
-            $('#ReferName').val(res.Fname);
-            $('#RefPhone').val(res.Phone);
-            $('#RefPhone2').val(res.Phone2);
-            $('#RefEmailId').val(res.EmailId);
+            if (res.Fname) {
+                $('#PersonalName1').val(res.Fname);
+            }
+            if (res.Phone) {
+                $('#PersonalPhone1').val(res.Phone);
+            }
+            if (res.Phone2) {
+                $('#PersonalPhone2').val(res.Phone2);
+            }
         }
     });
 }
