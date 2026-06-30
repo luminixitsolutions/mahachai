@@ -368,6 +368,7 @@ function maha_get_sidebar_module_menu_categories()
                 array(
                     'name'  => 'Leave Request',
                     'items' => array_merge(
+                        array($L('Leave — All', 'all-leave-requests.php', array('67', '71', '93'))),
                         $E('Leave', 'all-pending-leave-requests.php', 'all-approve-leave-requests.php' . $sp, 'all-reject-leave-requests.php' . $sp, array('67', '71', '93'))
                     ),
                 ),
