@@ -616,6 +616,7 @@ if (!function_exists('maha_ar_pretty_cash_request_table_styles')) {
     vertical-align: middle !important;
 }
 .maha-pc-request-table .maha-ar-approve-cell { min-width: 130px; white-space: normal; vertical-align: middle !important; }
+.maha-pc-request-table .maha-ar-level-cell { min-width: 130px; max-width: 200px; white-space: normal !important; vertical-align: middle !important; word-break: break-word; }
 .maha-pc-request-table .maha-ar-approve-cell .approve-status { font-weight: 600; line-height: 1.3; }
 .maha-pc-request-table .maha-ar-approve-cell .approve-by { font-size: 12px; color: #495057; line-height: 1.3; }
 .maha-pc-request-table .maha-ar-approve-cell .approve-date { font-size: 11px; color: #6c757d; line-height: 1.3; }
@@ -628,7 +629,7 @@ if (!function_exists('maha_ar_pretty_cash_request_table_styles')) {
 }
 
 if (!function_exists('maha_ar_pretty_cash_request_table_row')) {
-    function maha_ar_pretty_cash_request_table_row(array $row)
+    function maha_ar_pretty_cash_request_table_row(array $row, array $opts = array())
     {
         $MgrName = trim((string) ($row['MgrName'] ?? ''));
         $AdminName = trim((string) ($row['AdminName'] ?? ''));
@@ -655,7 +656,11 @@ if (!function_exists('maha_ar_pretty_cash_request_table_row')) {
                 <td class="text-money">&#8377;<?php echo number_format((float) ($row['Amount'] ?? 0), 2); ?></td>
                 <td class="text-money">&#8377;<?php echo number_format($WalletBal, 2); ?></td>
                 <td class="maha-ar-approve-cell"><?php echo maha_ar_pretty_cash_approve_cell_html($row['ManagerStatus'] ?? 0, $MgrName, $row['MannagerApproveDate'] ?? '', $noManager); ?></td>
+                <?php if (!empty($opts['admin_action'])) {
+                    maha_ar_pretty_cash_admin_action_cell($row, isset($opts['admin_action_page']) ? $opts['admin_action_page'] : 'ho');
+                } else { ?>
                 <td class="maha-ar-approve-cell"><?php echo maha_ar_pretty_cash_approve_cell_html($row['AdminStatus'] ?? 0, $AdminName, $row['AdminApproveDate'] ?? ''); ?></td>
+                <?php } ?>
                 <td class="maha-ar-approve-cell"><?php echo maha_ar_pretty_cash_approve_cell_html($row['AccStatus'] ?? 0, $AccName, $row['AccApproveDate'] ?? ''); ?></td>
                 <td class="narration-cell"><?php echo maha_ar_esc($row['Narration'] ?? ''); ?></td>
             </tr>

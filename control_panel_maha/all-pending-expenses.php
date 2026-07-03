@@ -4,9 +4,11 @@ include_once 'config.php';
 include_once 'auth.php';
 include_once 'includes/all-requests-view-helpers.php';
 include_once 'includes/all-requests-sql-filters.php';
+require_once __DIR__ . '/includes/ho-expense-acted-list-helpers.php';
 $user_id = $_SESSION['Admin']['id'];
-$MainPage = "All-Admin-Requests";
-$Page = "All-Admin-Pending-Pretty-Cash-Request";
+$MainPage = "All-Expenses";
+$Page = "All-Pending-Expenses";
+$allRequestsDefaultToday = true;
 ?>
 <!DOCTYPE html>
 <html lang="en" class="default-style">
@@ -31,13 +33,10 @@ $Page = "All-Admin-Pending-Pretty-Cash-Request";
 
 <div class="layout-container">
 
-
-
-
 <div class="layout-content">
 
 <div class="container-fluid flex-grow-1 container-p-y">
-<h4 class="font-weight-bold py-3 mb-0">Admin Pending Pretty Cash Request
+<h4 class="font-weight-bold py-3 mb-0">All Pending Expense Request
   
 </h4>
 
@@ -45,24 +44,27 @@ $Page = "All-Admin-Pending-Pretty-Cash-Request";
 <?php include_once 'includes/all-requests-date-filter.php'; ?>
 <div class="card-datatable table-responsive maha-wide-dt-wrap">
 <table id="example" class="table table-striped table-bordered maha-pc-request-table" style="width:100%">
-        <?php maha_ar_pretty_cash_request_table_head(); ?>
+        <?php ho_expense_all_pending_table_head(); ?>
         <tbody>
             <?php 
-            $sql = "SELECT te.*,tu.Fname,tu.Lname,tu.Photo AS Uphoto,tu2.Fname AS MgrName,tu3.Fname AS AdminName,tu4.Fname AS AccName FROM tbl_prettycash_request te 
-                INNER JOIN tbl_users tu ON tu.id=te.UserId 
-                LEFT JOIN tbl_users tu2 ON tu2.id=te.MrgBy 
-                LEFT JOIN tbl_users tu3 ON tu3.id=te.AdminBy 
-                LEFT JOIN tbl_users tu4 ON tu4.id=te.AccBy 
-                WHERE " . maha_ar_sql_where('petty_cash', 'pending') . "
-                AND te.ExpenseDate>='" . PENDING_EXPENSE_FROM_DATE . "'";
+            $sql = "SELECT te.*, tu.Fname, tu.Lname, tu.UnderByUser, tu.Photo AS Uphoto,
+       tu2.Fname AS MgrName, tu3.Fname AS AccName, tu4.Fname AS AccountName,
+       tu5.Fname AS BhFname, tu5.Lname AS BhLname
+       FROM tbl_expense_request te
+                INNER JOIN tbl_users tu ON tu.id = te.UserId
+                LEFT JOIN tbl_users tu2 ON tu2.id = te.MrgBy
+                LEFT JOIN tbl_users tu3 ON tu3.id = te.AccBy
+                LEFT JOIN tbl_users tu4 ON tu4.id = te.AccountBy
+                LEFT JOIN tbl_users tu5 ON tu5.id = te.BhBy
+                WHERE " . maha_ar_sql_where('employee_expense', 'pending') . "
+                  AND te.ExpenseDate >= '" . PENDING_EXPENSE_FROM_DATE . "'";
             $sql .= maha_ar_sql_append_date('ExpenseDate');
-            $sql .= " ORDER BY te.ExpenseDate DESC";
+            $sql .= " ORDER BY te.ExpenseDate DESC, te.id DESC";
             $res = $conn->query($sql);
-            while ($row = $res->fetch_assoc()) {
-                maha_ar_pretty_cash_request_table_row($row, array(
-                    'admin_action' => true,
-                    'admin_action_page' => 'ho',
-                ));
+            if ($res) {
+                while ($row = $res->fetch_assoc()) {
+                    ho_expense_all_pending_table_row($conn, $row);
+                }
             }
             ?>
         </tbody>
@@ -70,8 +72,6 @@ $Page = "All-Admin-Pending-Pretty-Cash-Request";
 </div>
 </div>
 </div>
-
-
 
 
 <?php include_once 'footer.php'; ?>
@@ -87,6 +87,6 @@ $Page = "All-Admin-Pending-Pretty-Cash-Request";
 
 
 <?php include_once 'footer_script.php'; ?>
-<?php maha_ar_pretty_cash_request_datatable_init(); ?>
+<?php ho_expense_all_pending_datatable_init(); ?>
 </body>
 </html>

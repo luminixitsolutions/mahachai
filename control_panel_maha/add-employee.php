@@ -2,6 +2,29 @@
 // config must load before session_start() so session_name (MAHACPSESSID) matches login; otherwise
 // a default PHPSESSID session is used and $_SESSION['Admin'] from login is missing.
 include_once 'config.php';
+$empUsers2Helper = __DIR__ . '/ajax_files/employee_users2_helpers.php';
+if (is_readable($empUsers2Helper)) {
+    require_once $empUsers2Helper;
+}
+if (!function_exists('ensure_tbl_users2_nominee_phone_column')) {
+    function ensure_tbl_users2_nominee_phone_column()
+    {
+        global $conn;
+        if (!$conn) {
+            return;
+        }
+        $q = @$conn->query("SHOW COLUMNS FROM tbl_users2 LIKE 'NomineePhone'");
+        if (!$q || $q->num_rows === 0) {
+            @$conn->query("ALTER TABLE tbl_users2 ADD COLUMN `NomineePhone` VARCHAR(20) NULL DEFAULT NULL");
+            return;
+        }
+        $col = $q->fetch_assoc();
+        $type = strtolower((string) ($col['Type'] ?? ''));
+        if (strpos($type, 'char') === false && strpos($type, 'text') === false) {
+            @$conn->query("ALTER TABLE tbl_users2 MODIFY COLUMN `NomineePhone` VARCHAR(20) NULL DEFAULT NULL");
+        }
+    }
+}
 session_start();
 include_once 'auth.php';
 $user_id = $_SESSION['Admin']['id'];
@@ -192,62 +215,79 @@ $Page = "Add-Employee";
     }
 
     .emp-cp-menu-access {
-        border: 1px solid #dee2e6;
+        border: 1px solid #c5e4e7;
         border-radius: 4px;
         overflow: hidden;
         background: #fff;
     }
 
-    .emp-cp-ma-table-head,
-    .emp-cp-ma-subheader {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #f1f3f5;
-        border-bottom: 1px solid #dee2e6;
-        padding: 10px 16px;
+    .emp-cp-ma-search-wrap {
+        padding: 14px 16px;
+        background: #f8fcfc;
+        border-bottom: 1px solid #dceef0;
+    }
+
+    .emp-cp-ma-search-wrap .input-group-text {
+        background: #fff;
+        border-color: #c5e4e7;
+        color: #358f9a;
+    }
+
+    .emp-cp-ma-search-wrap .form-control {
+        border-color: #c5e4e7;
+    }
+
+    .emp-cp-ma-search-wrap .form-control:focus {
+        border-color: #358f9a;
+        box-shadow: 0 0 0 0.15rem rgba(53, 143, 154, 0.15);
+    }
+
+    .emp-cp-ma-search-empty {
+        display: none;
+        margin-top: 10px;
         font-size: 13px;
-        font-weight: 600;
-        color: #495057;
+        color: #6c757d;
     }
 
-    .emp-cp-ma-table-head span:last-child,
-    .emp-cp-ma-subheader span:last-child {
-        min-width: 52px;
-        text-align: center;
+    .emp-cp-ma-sections {
+        padding: 0;
     }
 
-    .emp-cp-ma-item {
-        border-bottom: 1px solid #e9ecef;
+    .emp-cp-ma-section {
+        border-bottom: 1px solid #e8f4f5;
     }
 
-    .emp-cp-ma-item:last-child {
+    .emp-cp-ma-section:last-child {
         border-bottom: none;
     }
 
-    .emp-cp-ma-trigger {
+    .emp-cp-ma-section-head,
+    .emp-cp-ma-group-head {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 16px;
+        margin: 0;
+    }
+
+    .emp-cp-ma-section-head {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 12px;
-        padding: 12px 16px;
+        border-left: 4px solid #358f9a;
+        color: #358f9a;
+        background: linear-gradient(90deg, #e8f4f5 0%, #f7fbfb 100%);
         cursor: pointer;
         user-select: none;
-        background: #fff;
         transition: background 0.15s ease;
     }
 
-    .emp-cp-ma-trigger:hover {
-        background: #f8f9fa;
+    .emp-cp-ma-section-head:hover {
+        filter: brightness(0.98);
     }
 
-    .emp-cp-ma-trigger-sub {
-        padding-left: 28px;
-        background: #fafbfc;
-    }
-
-    .emp-cp-ma-trigger-sub .emp-cp-ma-title {
-        font-size: 13px;
-        font-weight: 600;
+    .emp-cp-ma-section-title {
+        flex: 1;
     }
 
     .emp-cp-ma-toggle {
@@ -269,73 +309,49 @@ $Page = "Add-Employee";
         display: none;
     }
 
-    .emp-cp-ma-item.is-open > .emp-cp-ma-trigger .emp-cp-ma-icon-plus {
+    .emp-cp-ma-section.is-open > .emp-cp-ma-section-head .emp-cp-ma-icon-plus {
         display: none;
     }
 
-    .emp-cp-ma-item.is-open > .emp-cp-ma-trigger .emp-cp-ma-icon-minus {
+    .emp-cp-ma-section.is-open > .emp-cp-ma-section-head .emp-cp-ma-icon-minus {
         display: inline;
     }
 
-    .emp-cp-ma-title {
-        flex: 1;
-        font-size: 14px;
-        font-weight: 700;
-        color: #212529;
-    }
-
-    .emp-cp-ma-check {
-        min-width: 52px;
-        display: flex;
-        justify-content: center;
-        padding-left: 0;
-    }
-
-    .emp-cp-ma-check .custom-control-label::before,
-    .emp-cp-ma-check .custom-control-label::after {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .emp-cp-ma-panel {
+    .emp-cp-ma-section-body {
         display: none;
         background: #fff;
     }
 
-    .emp-cp-ma-item.is-open > .emp-cp-ma-panel {
+    .emp-cp-ma-section.is-open > .emp-cp-ma-section-body {
         display: block;
     }
 
-    .emp-cp-ma-panel-sub {
-        border-top: 1px solid #eef1f3;
+    .emp-cp-ma-group-head {
+        font-size: 13px;
+        font-weight: 600;
+        padding-left: 20px;
+        color: #2d7a84;
+        background: #f3fafb;
+        border-left: 3px solid #7ec4cc;
     }
 
-    .emp-cp-ma-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 16px 10px 56px;
-        border-top: 1px solid #f1f3f5;
+    .emp-cp-ma-grid {
+        margin: 0;
+        padding: 10px 12px 4px;
+    }
+
+    .emp-cp-ma-grid .form-group {
+        margin-bottom: 8px;
+    }
+
+    .emp-cp-ma-grid .custom-control-label {
         font-size: 13px;
         color: #343a40;
+        cursor: pointer;
     }
 
-    .emp-cp-ma-panel-sub .emp-cp-ma-row {
-        padding-left: 72px;
-    }
-
-    .emp-cp-ma-row-label {
-        flex: 1;
-        padding-right: 12px;
-    }
-
-    .emp-cp-ma-subheader {
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .emp-cp-ma-panel > .emp-cp-ma-item:first-child .emp-cp-ma-trigger-sub {
-        border-top: 1px solid #eef1f3;
+    .emp-cp-ma-group + .emp-cp-ma-group .emp-cp-ma-group-head {
+        border-top: 1px solid #eef6f7;
     }
 
     #emp-options-access .form-group.col-md-4 {
@@ -380,6 +396,7 @@ if ($id) {
 if (!is_array($row7)) {
     $row7 = array();
 }
+unset($row7['NomineePhone']);
 $empOptionsRaw = '';
 if (isset($row7['Options2']) && trim((string) $row7['Options2']) !== '' && trim((string) $row7['Options2']) !== '0') {
     $empOptionsRaw = trim((string) $row7['Options2']);
@@ -429,7 +446,7 @@ if ($id) {
     $salaryEffectiveFromDefault = $row7['JoinDate'];
 }
 
-$sql71 = "SELECT * FROM tbl_users2 WHERE UserId='$id'";
+$sql71 = "SELECT * FROM tbl_users2 WHERE UserId='" . (int) $id . "' ORDER BY id DESC LIMIT 1";
 $row71 = getRecord($sql71);
 if (!is_array($row71)) {
     $row71 = array();
@@ -444,6 +461,23 @@ $row71['bdm_subzones'] = array_filter(array_map('trim', explode(',', isset($row7
 $row71['PersonalName1'] = $row71['PersonalName1'] ?? $row7['ReferName'] ?? '';
 $row71['PersonalPhone1'] = $row71['PersonalPhone1'] ?? $row7['RefPhone'] ?? '';
 $row71['PersonalPhone2'] = $row71['PersonalPhone2'] ?? $row7['RefPhone2'] ?? '';
+
+// Nominee Contact No: read only from tbl_users2 (never tbl_users.NomineePhone)
+ensure_tbl_users2_nominee_phone_column();
+$empNomineePhone = '';
+if ($id) {
+    $npRow = getRecord(
+        "SELECT NomineePhone FROM tbl_users2 WHERE UserId='" . (int) $id . "' ORDER BY id DESC LIMIT 1"
+    );
+    if (is_array($npRow)) {
+        $empNomineePhone = trim((string) ($npRow['NomineePhone'] ?? ''));
+        if ($empNomineePhone === '2147483647') {
+            $empNomineePhone = '';
+        }
+        $empNomineePhone = substr(preg_replace('/\D/', '', $empNomineePhone), 0, 10);
+    }
+}
+unset($row71['NomineePhone']);
 
 function emp_form_section_start($title, $attrs = '', $activeDefault = false) {
     static $n = 0;
@@ -837,7 +871,8 @@ function emp_form_section_end() {
                                             <label class="form-label"> Nominee Contact No</label>
                                             <input type="text" name="NomineePhone" id="NomineePhone" class="form-control js-phone-10"
                                                 placeholder="10 digit mobile" maxlength="10" inputmode="numeric" autocomplete="off"
-                                                value="<?php echo $row7["NomineePhone"]; ?>">
+                                                data-source="tbl_users2"
+                                                value="<?php echo htmlspecialchars($empNomineePhone, ENT_QUOTES, 'UTF-8'); ?>">
                                             <div class="clearfix"></div>
                                         </div>
                                         <div class="form-group col-md-3">
@@ -3159,9 +3194,33 @@ if (AadharNo.length !== 12) {
             }
             el.value = v;
         }
+        function loadNomineePhoneFromUsers2() {
+            var empId = ($('#userid').val() || '').toString().trim();
+            if (!empId) {
+                return;
+            }
+            $.ajax({
+                url: 'ajax_files/ajax_employee.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { action: 'getNomineePhone', id: empId },
+                success: function (data) {
+                    if (!data || !data.ok) {
+                        return;
+                    }
+                    var phone = (data.phone || '').toString().replace(/\D/g, '').substring(0, 10);
+                    if (phone === '2147483647') {
+                        phone = '';
+                    }
+                    $('#NomineePhone').val(phone);
+                }
+            });
+        }
+
         $('.js-phone-10').each(function () { cleanPhone10(this); });
         $('.js-num-only').each(function () { cleanDigits(this); });
         $('.js-decimal-only').each(function () { cleanDecimal(this); });
+        loadNomineePhoneFromUsers2();
         $(document).on('input', '.js-phone-10', function () {
             cleanPhone10(this);
         });

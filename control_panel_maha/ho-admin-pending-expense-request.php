@@ -1,4 +1,5 @@
 <?php 
+echo "<script>window.location.href='ho-manager-pending-expense-request.php';</script>";exit();
 session_start();
 include_once 'config.php';
 include_once 'auth.php';

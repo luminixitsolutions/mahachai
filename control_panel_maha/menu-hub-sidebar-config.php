@@ -325,7 +325,7 @@ function maha_get_sidebar_module_menu_categories()
         'admin-approval' => array(
             'slug'   => 'admin-approval',
             'title'  => 'Admin Approval',
-            'blurb'  => 'Admin approvals for employee, vendor, NSO vendor, below-2000 expenses, and petty cash.',
+            'blurb'  => 'Admin approvals for employee, vendor, NSO vendor, and petty cash.',
             'icon'   => 'ion ion-md-checkmark-circle',
             'accent' => '#dc3545',
             'groups' => array(
@@ -333,12 +333,6 @@ function maha_get_sidebar_module_menu_categories()
                     'name'  => 'Employee Expense',
                     'items' => array_merge(
                         $E('Employee Expense', 'ho-admin-pending-expense-request.php', 'ho-admin-approve-expense-request.php', 'ho-admin-reject-expense-request.php', array('38'))
-                    ),
-                ),
-                array(
-                    'name'  => 'Employee Expense Below 2000',
-                    'items' => array_merge(
-                        $E('Employee Expense Below 2000', 'ho-admin-pending-expense-request-below.php', 'ho-admin-approve-expense-request-below.php', 'ho-admin-reject-expense-request-below.php', array('38'))
                     ),
                 ),
                 array(

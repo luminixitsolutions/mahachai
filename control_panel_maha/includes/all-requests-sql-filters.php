@@ -56,8 +56,8 @@ if (!function_exists('maha_ar_sql_append_date')) {
 
 if (!function_exists('maha_ar_sql_where')) {
     /**
-     * @param string $type   employee_expense|petty_cash|vendor_expense|nso_vendor_expense|cash_book|manager_hr
-     * @param string $mode   pending|approve|reject
+     * @param string $type   employee_expense|petty_cash|vendor_expense|nso_vendor_expense|cash_book|manager_hr|penalty|hiring
+     * @param string $mode   all|pending|approve|reject
      * @param string $alias  table alias
      * @param string $scope  full|ho_admin_pending — ho_admin_pending = admin queue only (admin status pending, prior steps done)
      */
@@ -79,6 +79,10 @@ if (!function_exists('maha_ar_sql_where')) {
                 return maha_ar_sql_where_cash_book($mode, $alias);
             case 'manager_hr':
                 return maha_ar_sql_where_manager_hr($mode, $alias);
+            case 'penalty':
+                return maha_ar_sql_where_penalty($mode, $alias);
+            case 'hiring':
+                return maha_ar_sql_where_hiring($mode, $alias);
             default:
                 return '1=1';
         }
@@ -88,6 +92,10 @@ if (!function_exists('maha_ar_sql_where')) {
 if (!function_exists('maha_ar_sql_where_employee_expense')) {
     function maha_ar_sql_where_employee_expense($mode, $alias = 'te')
     {
+        if ($mode === 'all') {
+            return "{$alias}.UserId != 0";
+        }
+
         $reject = maha_ar_sql_or_any(array(
             maha_ar_sql_st_rejected('ManagerStatus', $alias),
             maha_ar_sql_st_rejected('AdminStatus', $alias),
@@ -150,6 +158,10 @@ if (!function_exists('maha_ar_sql_where_pretty_cash')) {
      */
     function maha_ar_sql_where_pretty_cash($mode, $alias = 'te', $scope = 'full')
     {
+        if ($mode === 'all') {
+            return "{$alias}.UserId != 0";
+        }
+
         $fields = ($scope === 'admin')
             ? array('ManagerStatus', 'AdminStatus')
             : array('ManagerStatus', 'AdminStatus', 'AccStatus');
@@ -218,6 +230,10 @@ if (!function_exists('maha_ar_sql_where_pretty_cash_ho')) {
 if (!function_exists('maha_ar_sql_where_vendor_expense')) {
     function maha_ar_sql_where_vendor_expense($mode, $alias = 'te', $nso = false)
     {
+        if ($mode === 'all') {
+            return "{$alias}.UserId != 0";
+        }
+
         $fields = array('BdmStatus', 'PurchaseStatus', 'ManagerStatus', 'AdminStatus');
         $rejectParts = array();
         $approvedParts = array();
@@ -246,6 +262,9 @@ if (!function_exists('maha_ar_sql_where_vendor_expense')) {
 if (!function_exists('maha_ar_sql_where_cash_book')) {
     function maha_ar_sql_where_cash_book($mode, $alias = 'tcb')
     {
+        if ($mode === 'all') {
+            return '1=1';
+        }
         if ($mode === 'reject') {
             return maha_ar_sql_st_rejected('ApproveStatus', $alias);
         }
@@ -260,6 +279,10 @@ if (!function_exists('maha_ar_sql_where_cash_book')) {
 if (!function_exists('maha_ar_sql_where_manager_hr')) {
     function maha_ar_sql_where_manager_hr($mode, $alias = 'te')
     {
+        if ($mode === 'all') {
+            return "{$alias}.UserId != 0";
+        }
+
         $reject = maha_ar_sql_or_any(array(
             maha_ar_sql_st_rejected('ManagerStatus', $alias),
             maha_ar_sql_st_rejected('HrStatus', $alias),
@@ -285,5 +308,37 @@ if (!function_exists('maha_ar_sql_where_manager_hr')) {
         }
 
         return "{$alias}.UserId != 0 AND NOT {$reject} AND NOT {$fullyApproved} AND {$anyPending}";
+    }
+}
+
+if (!function_exists('maha_ar_sql_where_penalty')) {
+    function maha_ar_sql_where_penalty($mode, $alias = 'p')
+    {
+        if ($mode === 'all') {
+            return '1=1';
+        }
+        if ($mode === 'reject') {
+            return "({$alias}.bdm_status = 'rejected' OR {$alias}.bh_status = 'rejected')";
+        }
+        if ($mode === 'approve') {
+            return "({$alias}.bdm_status = 'approved' OR {$alias}.bh_status = 'approved')";
+        }
+        return "({$alias}.bdm_status = 'pending' OR ({$alias}.bdm_status = 'approved' AND {$alias}.bh_status = 'pending'))";
+    }
+}
+
+if (!function_exists('maha_ar_sql_where_hiring')) {
+    function maha_ar_sql_where_hiring($mode, $alias = 'hr')
+    {
+        if ($mode === 'all') {
+            return '1=1';
+        }
+        if ($mode === 'reject') {
+            return "{$alias}.Status = 2";
+        }
+        if ($mode === 'approve') {
+            return "{$alias}.Status IN (1, 3, 4)";
+        }
+        return "{$alias}.Status = 0";
     }
 }
