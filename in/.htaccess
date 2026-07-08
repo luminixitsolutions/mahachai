@@ -1,0 +1,6 @@
+RewriteEngine On 
+
+RewriteRule ^invoice/index\.php$ invoice.php [L,QSA]
+RewriteRule ^invoice/([0-9]+)/?$ invoice.php?Unqid=$1 [L,QSA]
+RewriteRule ^invoice/(.*)/$ invoice.php?pageurl=$1 [L,QSA]
+RewriteRule ^invoice/(.*)$ invoice.php?pageurl=$1 [L,QSA]
